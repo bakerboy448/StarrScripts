@@ -14,6 +14,9 @@ elif [ -z "$sonarr_eventtype" ]; then
     clientID=${sonarr_download_client}
     downloadID=${sonarr_download_id}
     eventType=${sonarr_eventtype}
+else
+    echo "Unknown Event Type. Failing."
+    exit 1
 fi
 
 if [ "$eventType" == "Test" ]; then
@@ -30,6 +33,7 @@ if [ "$clientID" == "$clientname" ]; then
     curl -s -o /dev/null -w "%{http_code}"-XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode infoHash="$downloadID"
 else
     echo "Client $clientID is not configured $clientname. Skipping..."
+    exit 0
 fi
 if [ "$http_code" == "204-XPOST" ]; then
     echo "Success. Xseed Search triggered by $app for DownloadClient: $clientID and DownloadId: $downloadID"
