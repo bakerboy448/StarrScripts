@@ -14,6 +14,11 @@ elif [ -z "$sonarr_eventtype" ]; then
     clientID=${sonarr_download_client}
     downloadID=${sonarr_download_id}
     eventType=${sonarr_eventtype}
+elif [ -z "$lidarr_eventtype" ]; then
+    app="lidarr"
+    clientID=${lidarr_download_client}
+    downloadID=${lidarr_download_id}
+    eventType=${lidarr_eventtype}
 fi
 
 if [ "$eventType" == "Test" ]; then
