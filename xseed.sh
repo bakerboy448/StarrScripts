@@ -6,7 +6,7 @@ xseed_port="2468"
 
 if [ -z "$radarr_eventtype" ]; then
     app="radarr"
-    clientID=${radar_download_client}
+    clientID=${radarr_download_client}
     downloadID=${radarr_download_id}
     eventType=${radarr_eventtype}
 elif [ -z "$sonarr_eventtype" ]; then
