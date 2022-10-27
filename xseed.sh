@@ -4,17 +4,21 @@ clientname="Qbit"
 xseed_host="localhost"
 xseed_port="2468"
 
-if [ -z "$radarr_eventtype" ]; then
+if [ -n "$radarr_eventtype" ]; then
     app="radarr"
     clientID=${radarr_download_client}
     downloadID=${radarr_download_id}
     eventType=${radarr_eventtype}
-elif [ -z "$sonarr_eventtype" ]; then
+elif [ -n "$sonarr_eventtype" ]; then
     app="sonarr"
-    echo "sonarr detected with event type $sonarr_eventtype"
     clientID=${sonarr_download_client}
     downloadID=${sonarr_download_id}
     eventType=${sonarr_eventtype}
+elif [ -n "$Lidarr_EventType" ]; then
+    app="lidarr"
+    clientID=${Lidarr_Download_Client}
+    downloadID=${Lidarr_Download_Id}
+    eventType=${Lidarr_eventtype}
 else
     echo "Unknown Event Type. Failing."
     exit 1
