@@ -30,15 +30,16 @@ if [ -z "$downloadID" ]; then
 fi
 if [ "$clientID" == "$clientname" ]; then
     echo "Client $clientname trigged search for DownloadId $downloadID"
-    curl -s -o /dev/null -w "%{http_code}"-XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode infoHash="$downloadID"
+    xseed_resp=$(curl --silent --output /dev/null --write-out "%{http_code}" -XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode infoHash="$downloadID")
+    echo ""
 else
     echo "Client $clientID is not configured $clientname. Skipping..."
     exit 0
 fi
-if [ "$http_code" == "204-XPOST" ]; then
+if [ "$xseed_resp" == "204" ]; then
     echo "Success. Xseed Search triggered by $app for DownloadClient: $clientID and DownloadId: $downloadID"
     exit 0
 else
-    echo "Xseed webhook failed - HTTP Code $http_code from $app for DownloadClient: $clientID and DownloadId: $downloadID"
+    echo "Xseed webhook failed - HTTP Code $xseed_resp from $app for DownloadClient: $clientID and DownloadId: $downloadID"
     exit 1
 fi
