@@ -31,8 +31,8 @@ if [ "$clientID" == "$clientname" ]; then
 else
     echo "Client $clientID is not configured $clientname. Skipping..."
 fi
-if [ "$http_code" == "204" ]; then
-    echo "$http_code - Success. Xseed Search triggered by $app for DownloadClient: $clientID and DownloadId: $downloadID"
+if [ "$http_code" == "204-XPOST" ]; then
+    echo "Success. Xseed Search triggered by $app for DownloadClient: $clientID and DownloadId: $downloadID"
     exit 0
 else
     echo "Xseed webhook failed - HTTP Code $http_code from $app for DownloadClient: $clientID and DownloadId: $downloadID"
