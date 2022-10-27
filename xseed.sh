@@ -18,7 +18,7 @@ elif [ -n "$Lidarr_EventType" ]; then
     app="lidarr"
     clientID=${Lidarr_Download_Client}
     downloadID=${Lidarr_Download_Id}
-    eventType=${Lidarr_eventtype}
+    eventType=${Lidarr_EventType}
 else
     echo "Unknown Event Type. Failing."
     exit 1
