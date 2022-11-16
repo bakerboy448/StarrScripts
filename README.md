@@ -14,6 +14,10 @@ Script to update [Cross-Seed](https://github.com/cross-seed/cross-seed) to the c
 
 Use with Qbit on download complete to trigger [QbitManage](https://github.com/StuffAnThings/qbit_manage) to run with the specified parameters
 
+## qbm-update.sh
+
+Script to update [QbitManage](https://github.com/StuffAnThings/qbit_manage) to the currently checked out branch
+
 ## pmm-update.sh
 
 Script to update [Plex Meta Manager](https://github.com/meisnate12/Plex-Meta-Manager) to the currently checked out branch
