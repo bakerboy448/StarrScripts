@@ -1,5 +1,7 @@
 #!/bin/bash
 
+force=${1:false}
+
 # Get Current User
 uid=$(id -u)
 
@@ -32,16 +34,17 @@ fi
 branch=$(git -C "$pmmPath" rev-parse --abbrev-ref HEAD)
 echo "Current Branch: $branch. Checking for updates..."
 git -C "$pmmPath" fetch
-if [ "$(git -C "$pmmPath" rev-parse HEAD)" = "$(git -C "$pmmPath" rev-parse @'{u}')" ]; then
+echo "force update is:$force"
+if [ "$(git -C "$pmmPath" rev-parse HEAD)" = "$(git -C "$pmmPath" rev-parse @'{u}')" ] && [ "$force" = false ]; then
     echo "=== Already up to date $currentVersion on $branch ==="
     exit 0
 fi
 git -C "$pmmPath" reset --hard "$pmmUpstreamGitRemote"/"$branch"
 newVersion=$(cat "$pmmVersionFile")
 newRequirements=$(sha1sum "$pmmRequirementsFile" | awk '{print $1}')
-if [ "$currentRequirements" != "$newRequirements" ]; then
+if [ "$currentRequirements" != "$newRequirements" ] || [ "$force" = true ]; then
     echo "=== Requirements changed, updating venv ==="
-    "$pmmVenvPath"/bin/pip install -r "$pmmRequirementsFile"
+    "$pmmVenvPath"/bin/python3 "$pmmVenvPath"/bin/pip install -r "$pmmRequirementsFile"
 fi
 echo "=== Restarting PMM Service ==="
 sudo systemctl restart "$pmmServiceName"
