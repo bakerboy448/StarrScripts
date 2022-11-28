@@ -1,5 +1,7 @@
 #!/bin/bash
 
+force=${1:false}
+
 # Get Current User
 uid=$(id -u)
 
@@ -33,16 +35,18 @@ fi
 branch=$(git -C "$qbmPath" rev-parse --abbrev-ref HEAD)
 echo "Current Branch: $branch. Checking for updates..."
 git -C "$qbmPath" fetch
-if [ "$(git -C "$qbmPath" rev-parse HEAD)" = "$(git -C "$qbmPath" rev-parse @'{u}')" ]; then
+echo "force update is:$force"
+if [ "$(git -C "$qbmPath" rev-parse HEAD)" = "$(git -C "$qbmPath" rev-parse @'{u}')" ] && [ "$force" = false ]; then
     echo "=== Already up to date $currentVersion on $branch ==="
     exit 0
 fi
+
 git -C "$qbmPath" reset --hard "$qbmUpstreamGitRemote"/"$branch"
 newVersion=$(cat "$qbmVersionFile")
 newRequirements=$(sha1sum "$qbmRequirementsFile" | awk '{print $1}')
-if [ "$currentRequirements" != "$newRequirements" ]; then
+if [ "$currentRequirements" != "$newRequirements" ] && [ "$force" = false ]; then
     echo "=== Requirements changed, updating venv ==="
-    "$qbmVenvPath"/bin/pip install -r "$qbmRequirementsFile"
+    "$qbmVenvPath"/bin/python3 "$qbmVenvPath"/bin/pip install -r "$qbmRequirementsFile"
 fi
 echo "=== Restarting qbm Service ==="
 sudo systemctl restart "$qbmServiceName"
