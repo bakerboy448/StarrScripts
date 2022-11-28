@@ -44,7 +44,7 @@ fi
 git -C "$qbmPath" reset --hard "$qbmUpstreamGitRemote"/"$branch"
 newVersion=$(cat "$qbmVersionFile")
 newRequirements=$(sha1sum "$qbmRequirementsFile" | awk '{print $1}')
-if [ "$currentRequirements" != "$newRequirements" ] && [ "$force" = false ]; then
+if [ "$currentRequirements" != "$newRequirements" ] || [ "$force" = false ]; then
     echo "=== Requirements changed, updating venv ==="
     "$qbmVenvPath"/bin/python3 "$qbmVenvPath"/bin/pip install -r "$qbmRequirementsFile"
 fi
