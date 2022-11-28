@@ -36,7 +36,7 @@ branch=$(git -C "$qbmPath" rev-parse --abbrev-ref HEAD)
 echo "Current Branch: $branch. Checking for updates..."
 git -C "$qbmPath" fetch
 echo "force update is:$force"
-if [ "$(git -C "$qbmPath" rev-parse HEAD)" = "$(git -C "$qbmPath" rev-parse @'{u}')" ] && [ "$force" = false ]; then
+if [ "$(git -C "$qbmPath" rev-parse HEAD)" = "$(git -C "$qbmPath" rev-parse @'{u}')" ] && [ "$force" != true ]; then
     echo "=== Already up to date $currentVersion on $branch ==="
     exit 0
 fi
