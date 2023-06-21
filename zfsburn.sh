@@ -62,7 +62,7 @@ for dataset in $(zfs list -r -o name "$1" | tail -n +2); do
         done
 
         if [[ $deleted_snapshots -eq 0 ]]; then
-            break
+            break 2  # Break out of both inner and outer loop
         fi
     done
 done
