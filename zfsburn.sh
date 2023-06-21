@@ -3,6 +3,7 @@
 list_snapshots() {
     zfs list -t snapshot -o name "$1" | grep "$2" | tac | tail -n +"$((3 + 1))" | sed 's/.*@//' | tr '\n' ',' | sed 's/,$//'
 }
+
 calculate_space() {
     zfs list -H -o used -t snapshot -r "$1" | awk '{ sum += $1 } END { printf "%.2f", sum / (1024^3) }'
 }
@@ -23,10 +24,13 @@ cleanup_snapshot() {
             sudo zfs destroy -v "$dataset@$snapshot"
             space_freed=$(calculate_space "$dataset")
             echo "Space freed: ${space_freed}GB"
+            return 1  # Snapshot deleted, indicate with non-zero exit code
         else
             echo "Snapshot $dataset@$snapshot does not exist. Skipping cleanup."
         fi
     fi
+
+    return 0  # Snapshot not deleted, indicate with zero exit code
 }
 
 for dataset in $(zfs list -r -o name "$1" | tail -n +2); do
@@ -48,8 +52,16 @@ for dataset in $(zfs list -r -o name "$1" | tail -n +2); do
             break
         fi
 
+        deleted_snapshots=0  # Variable to track the number of deleted snapshots
+
         for snapshot in $snapshots_to_delete; do
-            cleanup_snapshot "$dataset" "$snapshot"
+            if cleanup_snapshot "$dataset" "$snapshot"; then
+                deleted_snapshots=$((deleted_snapshots + 1))
+            fi
         done
+
+        if [[ $deleted_snapshots -eq 0 ]]; then
+            break
+        fi
     done
 done
