@@ -1,14 +1,25 @@
 #!/bin/bash
 
+MAX_FREQ=2
+MAX_HOURLY=2
+MAX_DAILY=0
+MAX_WEEKLY=0
+MAX_MONTHLY=0
+
 list_snapshots() {
-    zfs list -t snapshot -o name "$1" | grep "$2" | tac | tail -n +"$((3 + 1))" | sed 's/.*@//'
+    local dataset="$1"
+    local filter="$2"
+    local max_count="$3"
+    local snapshots
+    snapshots=$(zfs list -t snapshot -o name -r "$dataset" | grep "$filter" | awk -F'@|zfs-auto-snap_' '{print $2}' | sort -r | tail -n +"$((max_count + 1))")
+    echo "$snapshots"
 }
 
 calculate_space() {
     zfs list -H -o used -t snapshot -r "$1" | awk '{ sum += $1 } END { printf "%.2f", sum / (1024^3) }'
 }
 
-if [ $# -ne 1 ]; then
+if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <dataset>"
     exit 1
 fi
@@ -19,19 +30,18 @@ cleanup_snapshot() {
 
     if [ -n "$snapshot" ]; then
         # Check if the snapshot still exists
-        if zfs list -t snapshot -o name "$dataset@$snapshot" >/dev/null 2>&1; then
+        if zfs list -t snapshot -o name -r "$dataset" | grep -q "^${dataset}@${snapshot}$"; then
             echo "Cleaning up $dataset@$snapshot..."
             sudo zfs destroy -v "$dataset@$snapshot"
             space_freed=$(calculate_space "$dataset")
             echo "Space freed: ${space_freed}GB"
-            return 0  # Snapshot deleted successfully
+            return 1  # Snapshot deleted, indicate with non-zero exit code
         else
             echo "Snapshot $dataset@$snapshot does not exist. Skipping cleanup."
-            return 1  # Snapshot doesn't exist, consider it as cleaned up
         fi
     fi
 
-    return 1  # Snapshot not deleted, consider it as cleaned up
+    return 0  # Snapshot not deleted, indicate with zero exit code
 }
 
 for dataset in $(zfs list -r -o name "$1" | tail -n +2); do
@@ -41,19 +51,19 @@ for dataset in $(zfs list -r -o name "$1" | tail -n +2); do
         update=$(list_snapshots "$dataset" update 0)
 
         # Keep X frequent, Y hourly, Z daily, D weekly, and E monthly snapshots.
-        old_frequent=$(list_snapshots "$dataset" frequent 2)
-        old_hourly=$(list_snapshots "$dataset" hourly 2)
-        old_daily=$(list_snapshots "$dataset" daily 0)
-        old_weekly=$(list_snapshots "$dataset" weekly 0)
-        old_monthly=$(list_snapshots "$dataset" monthly 0)
+        old_frequent=$(list_snapshots "$dataset" frequent "$MAX_FREQ")
+        old_hourly=$(list_snapshots "$dataset" hourly "$MAX_HOURLY")
+        old_daily=$(list_snapshots "$dataset" daily "$MAX_DAILY")
+        old_weekly=$(list_snapshots "$dataset" weekly "$MAX_WEEKLY")
+        old_monthly=$(list_snapshots "$dataset" monthly "$MAX_MONTHLY")
 
-        snapshots_to_delete=$(echo "$valid_state$update$old_frequent$old_hourly$old_daily$old_weekly$old_monthly" | sed 's/.$//' | tr ' ' '\n' | sort -u)
+        snapshots_to_delete=$(printf "%s%s%s%s%s%s" "$valid_state" "$update" "$old_frequent" "$old_hourly" "$old_daily" "$old_weekly$old_monthly" | sed 's/.$//' | tr ',' '\n' | sort)
 
-        if [[ -z "$snapshots_to_delete" ]]; then
+        if [ -z "$snapshots_to_delete" ]; then
             break
         fi
 
-        deleted_snapshots=0
+        deleted_snapshots=0  # Variable to track the number of deleted snapshots
 
         for snapshot in $snapshots_to_delete; do
             if cleanup_snapshot "$dataset" "$snapshot"; then
@@ -61,8 +71,8 @@ for dataset in $(zfs list -r -o name "$1" | tail -n +2); do
             fi
         done
 
-        if [[ $deleted_snapshots -eq 0 ]]; then
-            break 2  # Break out of both inner and outer loop
+        if [ "$deleted_snapshots" -eq 0 ]; then
+            break
         fi
     done
 done
