@@ -1,79 +1,92 @@
 #!/bin/bash
 
-VERBOSE=0  # Set this to 1 to see all messages
+# Constants
+VERBOSE=1  # Set this to 1 for trace-level logging, 0 for informational logging
 MAX_FREQ=2
 MAX_HOURLY=2
 MAX_DAILY=0
 MAX_WEEKLY=0
 MAX_MONTHLY=0
 
-list_snapshots() {
-    local dataset="$1"
-    local filter="$2"
-    local max_snapshots="$3"
-    zfs list -t snapshot -o name -r "$dataset" | grep "$filter" | awk -F'@|zfs-auto-snap_' '{print $2}'
+# Function to retrieve snapshot counts for a specific snapshot type
+get_snapshot_count() {
+    local snapshot_type="$1"
+    local dataset="$2"
+    
+    # Filter snapshots based on the snapshot type and count them
+    snapshot_count=$(sudo zfs list -t snapshot -o name -r "$dataset" | grep -E ".*@$snapshot_type-.*" | grep -c '')
+    
+    echo "$snapshot_count"
 }
 
-calculate_space() {
-    zfs list -H -o used -t snapshot -r "$1" | awk '{ sum += $1 } END { printf "%.2f", sum / (1024^3) }'
-}
-
-cleanup_snapshot() {
-    local snapshot="$1"
-
-    if [ -n "$snapshot" ]; then
-        # Check if the snapshot still exists
-        if zfs list -t snapshot -o name | grep -q "^${snapshot}$"; then
-            echo "Cleaning up $snapshot..."
-            sudo zfs destroy -v "$snapshot"
-            space_freed=$(calculate_space "${snapshot%%@*}")
-            echo "Space freed: ${space_freed}GB"
-            return 1  # Snapshot deleted, indicate with non-zero exit code
-        else
-            echo "Snapshot $snapshot does not exist. Skipping cleanup."
-        fi
-    fi
-
-    return 0  # Snapshot not deleted, indicate with zero exit code
-}
-
+# Function to delete snapshots based on frequency limits
 delete_snapshots() {
     local dataset="$1"
-    local filter="$2"
-    local max_snapshots="$3"
-    
-    snapshots=$(list_snapshots "$dataset" "$filter" "$max_snapshots")
-    
-    if [ -n "$snapshots" ]; then
-        echo "Deleting snapshots in dataset: $dataset"
-        
-        for snapshot in $snapshots; do
-            if cleanup_snapshot "$snapshot"; then
-                echo "Snapshot $snapshot deleted."
+    local snapshots=()
+    local deleted=0
+    local space_gained=0
+
+    # Retrieve all snapshots for the dataset
+    readarray -t snapshots < <(sudo zfs list -t snapshot -H -o name -r "$dataset")
+
+    # Logging function based on verbosity level
+    log() {
+        local level="$1"
+        local message="$2"
+        if ((level == 0)) || ((VERBOSE == 1 && level == 1)); then
+            echo "$message"
+        fi
+    }
+
+    # Info log prior to filtering
+    log 0 "Total snapshots before filtering: ${#snapshots[@]}"
+
+    # Loop through snapshots and delete based on frequency limits
+    for snapshot in "${snapshots[@]}"; do
+        log 1 "Filtering snapshot: $snapshot"
+
+        local snapshot_name=${snapshot##*/}
+        local snapshot_type=${snapshot_name%%-*}
+
+        if [[ "$snapshot_type" =~ ^(frequent|hourly|daily|weekly|monthly)$ ]]; then
+            log 0 "Processing snapshot: $snapshot"
+
+            local snapshot_count=$(get_snapshot_count "$snapshot_type" "$dataset")
+            local max_count=0
+
+            if [[ "$snapshot_type" == "frequent" ]]; then
+                max_count=$MAX_FREQ
+            elif [[ "$snapshot_type" == "hourly" ]]; then
+                max_count=$MAX_HOURLY
+            elif [[ "$snapshot_type" == "daily" ]]; then
+                max_count=$MAX_DAILY
+            elif [[ "$snapshot_type" == "weekly" ]]; then
+                max_count=$MAX_WEEKLY
+            elif [[ "$snapshot_type" == "monthly" ]]; then
+                max_count=$MAX_MONTHLY
             fi
-        done
-    elif [ "$VERBOSE" -eq 1 ]; then
-        echo "No snapshots to delete in dataset: $dataset."
-    fi
+
+            log 1 "Current snapshot count: $snapshot_count"
+            log 1 "Maximum allowed: $max_count"
+
+            if ((snapshot_count > max_count)); then
+                log 0 "Deleting snapshot: $snapshot"
+                sudo zfs destroy "$snapshot"
+                ((deleted++))
+                local snapshot_space=$(sudo zfs list -o used -H -p "$snapshot")
+                ((space_gained += snapshot_space))
+                log 0 "Space gained: $(printf "%.2f" "$(bc -l <<< "scale=2; $snapshot_space / 1024")") KB"
+            fi
+        fi
+    done
+
+    log 0 "Deleted $deleted snapshots for dataset: $dataset. Total space gained: $(printf "%.2f" "$(bc -l <<< "scale=2; $space_gained / 1024")") KB"
 }
 
-zfs_list_output=$(zfs list -r -o name -t filesystem -H "$1")
-
-# Check if there are any datasets
-if [ -z "$zfs_list_output" ]; then
-    if [ "$VERBOSE" -eq 1 ]; then
-        echo "No datasets available under $1. Skipping cleanup."
-    fi
-    exit 0
+# Usage: ./zfsburn.sh <dataset>
+if [[ $# -lt 1 ]]; then
+    echo "Usage: ./zfsburn.sh <dataset>"
+    exit 1
 fi
 
-# If datasets are available, proceed with the cleanup
-while IFS= read -r dataset; do
-    echo "Processing dataset: $dataset"
-    
-    delete_snapshots "$dataset" frequent "$MAX_FREQ"
-    delete_snapshots "$dataset" hourly "$MAX_HOURLY"
-    delete_snapshots "$dataset" daily "$MAX_DAILY"
-    delete_snapshots "$dataset" weekly "$MAX_WEEKLY"
-    delete_snapshots "$dataset" monthly "$MAX_MONTHLY"
-done <<< "$zfs_list_output"
+delete_snapshots "$1"
