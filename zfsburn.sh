@@ -23,17 +23,15 @@ get_snapshot_count() {
     local dataset="$2"
 
     # Filter snapshots based on the snapshot type and count them
-    snapshot_list=$(sudo zfs list -t snapshot -o name -r "$dataset")
-    filtered_snapshots=$(echo "$snapshot_list" | grep -E ".*@$snapshot_type-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}$" || true)
+    filtered_snapshots=$(sudo zfs list -t snapshot -o name -r "$dataset" | grep -E ".*@$snapshot_type-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}$" || true)
     snapshot_count=$(echo "$filtered_snapshots" | wc -l | awk '{print $1}')
 
     # Verbose logging
-    log 1 "Snapshot List:"
-    log 1 "$snapshot_list"
     log 1 "Filtered Snapshots for type $snapshot_type:"
     log 1 "$filtered_snapshots"
     log 1 "Snapshot Count for type $snapshot_type: $snapshot_count"
 
+    # Return the snapshot count as a variable
     echo "$snapshot_count"
 }
 
@@ -60,9 +58,7 @@ delete_snapshots() {
 
         if [[ "$snapshot_type" == "frequent" || "$snapshot_type" == "hourly" || "$snapshot_type" == "daily" || "$snapshot_type" == "weekly" || "$snapshot_type" == "monthly" ]]; then
             log 0 "Processing snapshot: $snapshot"
-
-            local snapshot_count
-            snapshot_count=$(get_snapshot_count "$snapshot_type" "$dataset")
+            
             local max_count=0
 
             if [[ "$snapshot_type" == "frequent" ]]; then
@@ -108,4 +104,20 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-delete_snapshots "$1"
+datasets=("$@")
+
+# Capture snapshot counts as variables
+frequent_count=$(get_snapshot_count "frequent" "${datasets[@]}")
+hourly_count=$(get_snapshot_count "hourly" "${datasets[@]}")
+daily_count=$(get_snapshot_count "daily" "${datasets[@]}")
+weekly_count=$(get_snapshot_count "weekly" "${datasets[@]}")
+monthly_count=$(get_snapshot_count "monthly" "${datasets[@]}")
+
+# Use the snapshot counts as needed in the rest of the script
+log 0 "Frequent Snapshot Count: $frequent_count"
+log 0 "Hourly Snapshot Count: $hourly_count"
+log 0 "Daily Snapshot Count: $daily_count"
+log 0 "Weekly Snapshot Count: $weekly_count"
+log 0 "Monthly Snapshot Count: $monthly_count"
+
+delete_snapshots "${datasets[@]}"
