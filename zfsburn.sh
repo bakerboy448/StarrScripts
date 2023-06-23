@@ -28,6 +28,15 @@ get_snapshot_count() {
     echo "$snapshot_count"
 }
 
+# Logging function based on verbosity level
+log() {
+    local level="$1"
+    local message="$2"
+    if ((level == 0)) || ((VERBOSE == 1 && level == 1)); then
+        echo "$message"
+    fi
+}
+
 # Function to delete snapshots based on frequency limits
 delete_snapshots() {
     local dataset="$1"
@@ -37,15 +46,6 @@ delete_snapshots() {
 
     # Retrieve all snapshots for the dataset
     readarray -t snapshots < <(sudo zfs list -t snapshot -H -o name -r "$dataset")
-
-    # Logging function based on verbosity level
-    log() {
-        local level="$1"
-        local message="$2"
-        if ((level == 0)) || ((VERBOSE == 1 && level == 1)); then
-            echo "$message"
-        fi
-    }
 
     # Info log prior to filtering
     log 0 "Total snapshots before filtering: ${#snapshots[@]}"
