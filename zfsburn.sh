@@ -12,10 +12,19 @@ MAX_MONTHLY=0
 get_snapshot_count() {
     local snapshot_type="$1"
     local dataset="$2"
-    
+
     # Filter snapshots based on the snapshot type and count them
-    snapshot_count=$(sudo zfs list -t snapshot -o name -r "$dataset" | grep -E ".*@$snapshot_type-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}$" | wc -l)
-    
+    snapshot_list=$(sudo zfs list -t snapshot -o name -r "$dataset")
+    filtered_snapshots=$(echo "$snapshot_list" | grep -E ".*@$snapshot_type-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}$")
+    snapshot_count=$(echo "$filtered_snapshots" | wc -l | awk '{print $1}')
+
+    # Verbose logging
+    log 1 "Snapshot List:"
+    log 1 "$snapshot_list"
+    log 1 "Filtered Snapshots for type $snapshot_type:"
+    log 1 "$filtered_snapshots"
+    log 1 "Snapshot Count for type $snapshot_type: $snapshot_count"
+
     echo "$snapshot_count"
 }
 
@@ -74,7 +83,7 @@ delete_snapshots() {
                 log 0 "Deleting snapshot: $snapshot"
                 if sudo zfs destroy "$snapshot"; then
                     ((deleted++))
-                    local snapshot_space=$(sudo zfs list -o used -H -p "$snapshot")
+                    local snapshot_space=$(sudo zfs list -o used -H -p "$snapshot" | awk '{print $1}')
                     ((space_gained += snapshot_space))
                     log 0 "Space gained: $(printf "%.2f" "$(bc -l <<< "scale=2; $snapshot_space / 1024")") KB"
                 else
