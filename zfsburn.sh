@@ -72,11 +72,14 @@ delete_snapshots() {
 
             if ((snapshot_count > max_count || max_count == 0)); then
                 log 0 "Deleting snapshot: $snapshot"
-                sudo zfs destroy "$snapshot"
-                ((deleted++))
-                local snapshot_space=$(sudo zfs list -o used -H -p "$snapshot")
-                ((space_gained += snapshot_space))
-                log 0 "Space gained: $(printf "%.2f" "$(bc -l <<< "scale=2; $snapshot_space / 1024")") KB"
+                if sudo zfs destroy "$snapshot"; then
+                    ((deleted++))
+                    local snapshot_space=$(sudo zfs list -o used -H -p "$snapshot")
+                    ((space_gained += snapshot_space))
+                    log 0 "Space gained: $(printf "%.2f" "$(bc -l <<< "scale=2; $snapshot_space / 1024")") KB"
+                else
+                    log 0 "Error deleting snapshot: $snapshot"
+                fi
             fi
         else
             log 1 "Skipped processing snapshot: $snapshot - no match to type: $snapshot_type"
