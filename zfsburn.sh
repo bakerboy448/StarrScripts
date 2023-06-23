@@ -8,6 +8,15 @@ MAX_DAILY=0
 MAX_WEEKLY=0
 MAX_MONTHLY=0
 
+# Logging function based on verbosity level
+log() {
+    local level="$1"
+    local message="$2"
+    if ((level == 0)) || ((VERBOSE == 1 && level == 1)); then
+        echo "$message"
+    fi
+}
+
 # Function to retrieve snapshot counts for a specific snapshot type
 get_snapshot_count() {
     local snapshot_type="$1"
@@ -26,15 +35,6 @@ get_snapshot_count() {
     log 1 "Snapshot Count for type $snapshot_type: $snapshot_count"
 
     echo "$snapshot_count"
-}
-
-# Logging function based on verbosity level
-log() {
-    local level="$1"
-    local message="$2"
-    if ((level == 0)) || ((VERBOSE == 1 && level == 1)); then
-        echo "$message"
-    fi
 }
 
 # Function to delete snapshots based on frequency limits
