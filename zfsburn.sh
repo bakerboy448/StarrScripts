@@ -23,14 +23,10 @@ get_snapshot_count() {
     local dataset="$2"
 
     # Filter snapshots based on the snapshot type and count them
-    filtered_snapshots=$(sudo zfs list -t snapshot -o name -r "$dataset" | grep -E ".*@$snapshot_type-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}$" || true)
-    snapshot_count=$(echo "$filtered_snapshots" | wc -l | awk '{print $1}')
+    snapshot_count=$(sudo zfs list -t snapshot -o name -r "$dataset" | grep -cE "@$snapshot_type-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}$")
 
     # Verbose logging
-    log 1 "Filtered Snapshots for type $snapshot_type:"
-    log 1 "$filtered_snapshots"
     log 1 "Snapshot Count for type $snapshot_type: $snapshot_count"
-
     # Return the snapshot count as a variable
     echo "$snapshot_count"
 }
