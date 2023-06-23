@@ -14,7 +14,7 @@ get_snapshot_count() {
     local dataset="$2"
     
     # Filter snapshots based on the snapshot type and count them
-    snapshot_count=$(sudo zfs list -t snapshot -o name -r "$dataset" | grep -E ".*@$snapshot_type-.*" | grep -c '')
+    snapshot_count=$(sudo zfs list -t snapshot -o name -r "$dataset" | grep -E ".*@$snapshot_type-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}$" | wc -l)
     
     echo "$snapshot_count"
 }
@@ -46,9 +46,10 @@ delete_snapshots() {
         log 1 "Filtering snapshot: $snapshot"
 
         local snapshot_name=${snapshot##*/}
-        local snapshot_type=${snapshot_name%%-*}
+        local snapshot_type=${snapshot_name#*_}
+        snapshot_type=${snapshot_type%%-*}
 
-        if [[ "$snapshot_type" =~ ^(frequent|hourly|daily|weekly|monthly)$ ]]; then
+        if [[ "$snapshot_type" == "frequent" || "$snapshot_type" == "hourly" || "$snapshot_type" == "daily" || "$snapshot_type" == "weekly" || "$snapshot_type" == "monthly" ]]; then
             log 0 "Processing snapshot: $snapshot"
 
             local snapshot_count=$(get_snapshot_count "$snapshot_type" "$dataset")
@@ -69,7 +70,7 @@ delete_snapshots() {
             log 1 "Current snapshot count: $snapshot_count"
             log 1 "Maximum allowed: $max_count"
 
-            if ((snapshot_count > max_count)); then
+            if ((snapshot_count > max_count || max_count == 0)); then
                 log 0 "Deleting snapshot: $snapshot"
                 sudo zfs destroy "$snapshot"
                 ((deleted++))
@@ -77,6 +78,8 @@ delete_snapshots() {
                 ((space_gained += snapshot_space))
                 log 0 "Space gained: $(printf "%.2f" "$(bc -l <<< "scale=2; $snapshot_space / 1024")") KB"
             fi
+        else
+            log 1 "Skipped processing snapshot: $snapshot - no match to type: $snapshot_type"
         fi
     done
 
