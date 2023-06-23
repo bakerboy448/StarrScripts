@@ -61,7 +61,8 @@ delete_snapshots() {
         if [[ "$snapshot_type" == "frequent" || "$snapshot_type" == "hourly" || "$snapshot_type" == "daily" || "$snapshot_type" == "weekly" || "$snapshot_type" == "monthly" ]]; then
             log 0 "Processing snapshot: $snapshot"
 
-            local snapshot_count=$(get_snapshot_count "$snapshot_type" "$dataset")
+            local snapshot_count
+            snapshot_count=$(get_snapshot_count "$snapshot_type" "$dataset")
             local max_count=0
 
             if [[ "$snapshot_type" == "frequent" ]]; then
@@ -81,9 +82,12 @@ delete_snapshots() {
 
             if ((snapshot_count > max_count || max_count == 0)); then
                 log 0 "Deleting snapshot: $snapshot"
+
+                local snapshot_space
+                snapshot_space=$(sudo zfs list -o used -H -p "$snapshot" | awk '{print $1}')
+
                 if sudo zfs destroy "$snapshot"; then
                     ((deleted++))
-                    local snapshot_space=$(sudo zfs list -o used -H -p "$snapshot" | awk '{print $1}')
                     ((space_gained += snapshot_space))
                     log 0 "Space gained: $(printf "%.2f" "$(bc -l <<< "scale=2; $snapshot_space / 1024")") KB"
                 else
