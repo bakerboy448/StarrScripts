@@ -104,14 +104,15 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-datasets=("$@")
+# Capture the dataset as a variable
+datasets="$1"
 
 # Capture snapshot counts as variables
-frequent_count=$(get_snapshot_count "frequent" "${datasets[@]}")
-hourly_count=$(get_snapshot_count "hourly" "${datasets[@]}")
-daily_count=$(get_snapshot_count "daily" "${datasets[@]}")
-weekly_count=$(get_snapshot_count "weekly" "${datasets[@]}")
-monthly_count=$(get_snapshot_count "monthly" "${datasets[@]}")
+frequent_count=$(get_snapshot_count "frequent" "$datasets")
+hourly_count=$(get_snapshot_count "hourly" "$datasets")
+daily_count=$(get_snapshot_count "daily" "$datasets")
+weekly_count=$(get_snapshot_count "weekly" "$datasets")
+monthly_count=$(get_snapshot_count "monthly" "$datasets")
 
 # Use the snapshot counts as needed in the rest of the script
 log 0 "Frequent Snapshot Count: [$frequent_count]"
@@ -120,4 +121,4 @@ log 0 "Daily Snapshot Count: [$daily_count]"
 log 0 "Weekly Snapshot Count: [$weekly_count]"
 log 0 "Monthly Snapshot Count: [$monthly_count]"
 
-delete_snapshots "${datasets[@]}"
+delete_snapshots "$datasets"
