@@ -18,7 +18,7 @@ log() {
 }
 
 # Bytes to Human Formatting
-function bytes_to_human_readable() {
+bytes_to_human_readable() {
     local bytes=$1
     local units=('B' 'KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
     local unit=0
@@ -100,7 +100,7 @@ delete_snapshots() {
                 if sudo zfs destroy "$snapshot"; then
                     ((deleted++))
                     ((space_gained += snapshot_space))
-                    snapshot_space_formatted = bytes_to_human_readable($snapshot_space)
+                    snapshot_space_formatted=$(bytes_to_human_readable "$snapshot_space")
                     log 0 "Space gained: $snapshot_space_formatted"
                 else
                     log 0 "Error deleting snapshot: [$snapshot]"
@@ -111,7 +111,7 @@ delete_snapshots() {
         fi
     done
 
-    space_gained_formatted = bytes_to_human_readable($space_gained)
+    space_gained_formatted=$(bytes_to_human_readable "$space_gained")
     log 0 "Deleted $deleted snapshots for dataset: [$dataset]. Total space gained: $space_gained_formatted"
 }
 
