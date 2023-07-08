@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Constants
-VERBOSE=1 # Set this to 1 for trace-level logging, 0 for informational logging
+VERBOSE=0 # Set this to 1 for trace-level logging, 0 for informational logging
 MAX_FREQ=2
 MAX_HOURLY=2
-MAX_DAILY=0
+MAX_DAILY=1
 MAX_WEEKLY=0
 MAX_MONTHLY=0
 
@@ -16,6 +16,21 @@ log() {
         echo "$message"
     fi
 }
+
+# Bytes to Human Formatting
+function bytes_to_human_readable() {
+    local bytes=$1
+    local units=('B' 'KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
+    local unit=0
+    
+    while (( bytes > 1024 )); do
+        (( bytes /= 1024 ))
+        (( unit++ ))
+    done
+    
+    echo "${bytes} ${units[unit]}"
+}
+
 
 # Function to retrieve snapshot counts for a specific snapshot type
 get_snapshot_count() {
@@ -85,7 +100,8 @@ delete_snapshots() {
                 if sudo zfs destroy "$snapshot"; then
                     ((deleted++))
                     ((space_gained += snapshot_space))
-                    log 0 "Space gained: $(printf "%.2f" "$(bc -l <<<"scale=2; $snapshot_space / 1024")") KB"
+                    snapshot_space_formatted = bytes_to_human_readable($snapshot_space)
+                    log 0 "Space gained: $snapshot_space_formatted"
                 else
                     log 0 "Error deleting snapshot: [$snapshot]"
                 fi
@@ -95,7 +111,8 @@ delete_snapshots() {
         fi
     done
 
-    log 0 "Deleted $deleted snapshots for dataset: [$dataset]. Total space gained: $(printf "%.2f" "$(bc -l <<<"scale=2; $space_gained / 1024")") KB"
+    space_gained_formatted = bytes_to_human_readable($space_gained)
+    log 0 "Deleted $deleted snapshots for dataset: [$dataset]. Total space gained: $space_gained_formatted"
 }
 
 # Usage: ./zfsburn.sh <dataset>
