@@ -17,6 +17,7 @@ elif [ -n "$sonarr_eventtype" ]; then
     clientID=${sonarr_download_client}
     downloadID=${sonarr_download_id}
     filePath=${sonarr_series_path}
+    folderPath=${sonarr_episodefile_sourcefolder}
     eventType=${sonarr_eventtype}
 elif [ -n "$Lidarr_EventType" ]; then
     app="lidarr"
@@ -45,15 +46,24 @@ if [ -z "$filePath" ]; then
     echo "FilePath is empty from $app. Skipping cross-seed search. DownloadClient: $clientID and FilePath: $filePath"
     exit 0
 fi
+# Ensure we have a filePath
+if [ -z "$folderPath" ]; then
+    echo "FolderPath is empty from $app. Skipping cross-seed search. DownloadClient: $clientID and FolderPath: $folderPath"
+    exit 0
+fi
 # Ensure we have a clientID, whether it is a torrent or usenet client, and that it is what the user configured. If it is, search.
 if [ "$clientID" == "$torrentclientname" ]; then
     echo "Client $torrentclientname trigged search for DownloadId $downloadID"
     xseed_resp=$(curl --silent --output /dev/null --write-out "%{http_code}" -XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode infoHash="$downloadID")
     echo ""
 elif [ "$clientID" == "$usenetclientname" ]; then
-    echo "Client $usenetclientname trigged search for FilePath $filePath"
-    xseed_resp=$(curl --silent --output /dev/null --write-out "%{http_code}" -XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode path="$filePath")
-    echo ""
+    if [[ "$folderPath" =~ \bS[0-9]+\b(?!E[0-9]+\b) ]]; then
+        echo "Client $usenetclientname skipped search for FolderPath $folderPath due to being a SeasonPack for usenet"
+    else
+        echo "Client $usenetclientname trigged search for FilePath $filePath"
+        xseed_resp=$(curl --silent --output /dev/null --write-out "%{http_code}" -XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode path="$filePath")
+        echo ""
+    fi
 else
     echo "Client $clientID does not match configured Client of $torrentclientname or $usenetclientname. Skipping..."
     exit 0
