@@ -53,14 +53,14 @@ if [ -z "$folderPath" ]; then
 fi
 # Ensure we have a clientID, whether it is a torrent or usenet client, and that it is what the user configured. If it is, search.
 if [ "$clientID" == "$torrentclientname" ]; then
-    echo "Client $torrentclientname trigged search for DownloadId $downloadID"
+    echo "Client $torrentclientname trigged search for DownloadId $downloadID with FilePath $filePath and FolderPath $folderPath"
     xseed_resp=$(curl --silent --output /dev/null --write-out "%{http_code}" -XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode infoHash="$downloadID")
     echo ""
 elif [ "$clientID" == "$usenetclientname" ]; then
     if [[ "$folderPath" =~ \bS[0-9]+\b(?!E[0-9]+\b) ]]; then
         echo "Client $usenetclientname skipped search for FolderPath $folderPath due to being a SeasonPack for usenet"
     else
-        echo "Client $usenetclientname trigged search for FilePath $filePath"
+        echo "Client $usenetclientname trigged search for DownloadId $downloadID with FilePath $filePath and FolderPath $folderPath"
         xseed_resp=$(curl --silent --output /dev/null --write-out "%{http_code}" -XPOST http://"$xseed_host":"$xseed_port"/api/webhook --data-urlencode path="$filePath")
         echo ""
     fi
