@@ -129,8 +129,6 @@ git -C "$repo_dir" pull || handle_error "Failed to pull latest changes."
 # Compile the code (assuming the repository requires a 'make' step)
 make --directory="$repo_dir" || handle_error "Failed to compile."
 
-# Change owner of the compiled binary
-sudo chown "$notifiarruser":"$notifiarruser" "$bin_path"
 echo "Stopping notifiarr..."
 sudo systemctl stop notifiarr
 
@@ -140,6 +138,8 @@ if [[ -f "$bin_path" ]]; then
 fi
 
 sudo mv "$repo_dir/notifiarr" "$bin_path" && echo "New binary moved to $bin_path"
+# Change owner of the compiled binary
+sudo chown "$notifiarruser":"$notifiarruser" "$bin_path"
 
 # Start the service again
 sudo systemctl start notifiarr
