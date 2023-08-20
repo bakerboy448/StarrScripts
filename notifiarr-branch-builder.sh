@@ -139,7 +139,7 @@ fi
 
 sudo mv "$repo_dir/notifiarr" "$bin_path" && echo "New binary moved to $bin_path"
 # Change owner of the compiled binary
-sudo chown "$notifiarruser":"$notifiarruser" "$bin_path"
+sudo chown "root:root" "$bin_path"
 
 # Start the service again
 sudo systemctl start notifiarr
