@@ -1,7 +1,26 @@
 #!/bin/bash
 
+# Function to display an error message and exit
+handle_error() {
+    echo "Error: $1"
+    exit 1
+}
+
+# Display usage information
+display_help() {
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  -h                    Display this help message"
+    echo "  --repo-url URL        Set the repository URL (default: https://github.com/Notifiarr/notifiarr.git)"
+    echo "  --repo-dir DIR        Set the repository directory (default: /home/bakerboy448/notifiarr)"
+    echo "  --bin-path PATH       Set the binary path (default: /usr/bin/notifiarr)"
+    echo "  --notifiarruser USER  Set the Notifiarr user (default: notifiarr)"
+    echo "  --branch BRANCH       Set the branch (default: master)"
+    exit 0
+}
+
 # Check if Golang is installed, install if not
-if ! command -v go &> /dev/null; then
+if ! command -v go &>/dev/null; then
     read -p "Golang is not installed. Do you want to install it? [Y/n] " go_install_choice
     if [[ "$go_install_choice" == [Yy]* ]]; then
         sudo apt update && sudo apt install -y golang || handle_error "Failed to install Golang."
@@ -12,7 +31,7 @@ if ! command -v go &> /dev/null; then
 fi
 
 # Check if Make is installed, install if not
-if ! command -v make &> /dev/null; then
+if ! command -v make &>/dev/null; then
     read -p "Make is not installed. Do you want to install it? [Y/n] " make_install_choice
     if [[ "$make_install_choice" == [Yy]* ]]; then
         sudo apt update && sudo apt install -y make || handle_error "Failed to install Make."
@@ -22,12 +41,39 @@ if ! command -v make &> /dev/null; then
     fi
 fi
 
-# Define variables
-repo_url="https://github.com/Notifiarr/notifiarr.git"
-repo_dir="/home/bakerboy448/notifiarr"
-source_path="$repo_dir/notifiarr"
-bin_path="/usr/bin/notifiarr"
-notifiarruser="notifiarr"
+# Parse command line options
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -h | --help)
+        display_help
+        ;;
+    --repo-url)
+        repo_url="$2"
+        shift
+        ;;
+    --repo-dir)
+        repo_dir="$2"
+        shift
+        ;;
+    --bin-path)
+        bin_path="$2"
+        shift
+        ;;
+    --notifiarruser)
+        notifiarruser="$2"
+        shift
+        ;;
+    --branch)
+        branch="$2"
+        shift
+        ;;
+    *)
+        echo "Invalid option: $1. Use -h for help."
+        exit 1
+        ;;
+    esac
+    shift
+done
 
 # Function to display an error message and exit
 handle_error() {
