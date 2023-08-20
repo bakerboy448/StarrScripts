@@ -1,52 +1,66 @@
 #!/bin/bash
+set -e
+set -o pipefail
 
-force=${1:false}
+force_update=${1:-false}
 
-# Get Current User
-uid=$(id -u)
+# Constants
+PMM_PATH="/opt/Plex-Meta-Manager"
+PMM_VENV_NAME="pmm-venv"
+PMM_SERVICE_NAME="pmm"
+PMM_UPSTREAM_GIT_REMOTE="origin"
+PMM_VERSION_FILE="$PMM_PATH/VERSION"
+PMM_REQUIREMENTS_FILE="$PMM_PATH/requirements.txt"
+PMM_VENV_PATH="/opt/.venv/$PMM_VENV_NAME"
+CURRENT_UID=$(id -u)
 
-# Set Variables
-pmmPath="/opt/Plex-Meta-Manager"
-pmmVenvName="pmm-venv"
-pmmServiceName="pmm"
-pmmUpstreamGitRemote="origin"
-# Create Paths
-pmmVersionFile="$pmmPath/VERSION"
-pmmRequirementsFile="$pmmPath/requirements.txt"
-pmmVenvPath="$pmmPath"/"$pmmVenvName"
-currentVersion=$(cat "$pmmVersionFile")
-currentRequirements=$(sha1sum "$pmmRequirementsFile" | awk '{print $1}')
-
-# Check if PMM is installed & Get Repo Owner
-# Check if user executing script owns PMM Repo
-if [ -d "$pmmPath" ]; then
-    pmmRepoOwner=$(stat -c '%u' "$pmmPath")
-    if [ "$pmmRepoOwner" != "$uid" ]; then
-        echo "Plex Meta Manager folder does exist but you [$uid] do not own the repo. Please run this script as the user that owns the repo [$pmmRepoOwner]"
+# Check if PMM is installed and the current user owns it
+check_pmm_installation() {
+    if [ -d "$PMM_PATH" ]; then
+        local pmm_repo_owner=$(stat -c '%u' "$PMM_PATH")
+        if [ "$pmm_repo_owner" != "$CURRENT_UID" ]; then
+            echo "You do not own the Plex Meta Manager repo. Please run this script as the user that owns the repo [$pmm_repo_owner]."
+            exit 1
+        fi
+    else
+        echo "Plex Meta Manager folder does not exist. Please install Plex Meta Manager before running this script."
         exit 1
     fi
-else
-    echo "Plex Meta Manager folder does not exist. Please install Plex Meta Manager before running this script."
-    exit 1
-fi
+}
 
-# Get current Branch
-branch=$(git -C "$pmmPath" rev-parse --abbrev-ref HEAD)
-echo "Current Branch: $branch. Checking for updates..."
-git -C "$pmmPath" fetch
-echo "force update is:$force"
-if [ "$(git -C "$pmmPath" rev-parse HEAD)" = "$(git -C "$pmmPath" rev-parse @'{u}')" ] && [ "$force" != true ]; then
-    echo "=== Already up to date $currentVersion on $branch ==="
-    exit 0
-fi
-git -C "$pmmPath" reset --hard "$pmmUpstreamGitRemote"/"$branch"
-newVersion=$(cat "$pmmVersionFile")
-newRequirements=$(sha1sum "$pmmRequirementsFile" | awk '{print $1}')
-if [ "$currentRequirements" != "$newRequirements" ] || [ "$force" = true ]; then
-    echo "=== Requirements changed, updating venv ==="
-    "$pmmVenvPath"/bin/python3 "$pmmVenvPath"/bin/pip install -r "$pmmRequirementsFile"
-fi
-echo "=== Restarting PMM Service ==="
-sudo systemctl restart "$pmmServiceName"
-echo "=== Updated from $currentVersion to $newVersion on $branch"
-exit 0
+# Update PMM if necessary
+update_pmm() {
+    local current_branch=$(git -C "$PMM_PATH" rev-parse --abbrev-ref HEAD)
+    echo "Current Branch: $current_branch. Checking for updates..."
+    git -C "$PMM_PATH" fetch
+    if [ "$(git -C "$PMM_PATH" rev-parse HEAD)" = "$(git -C "$PMM_PATH" rev-parse @'{u}')" ] && [ "$force_update" != true ]; then
+        local current_version=$(cat "$PMM_VERSION_FILE")
+        echo "=== Already up to date $current_version on $current_branch ==="
+        exit 0
+    fi
+    git -C "$PMM_PATH" reset --hard "$PMM_UPSTREAM_GIT_REMOTE/$current_branch"
+}
+
+# Update venv if necessary
+update_venv() {
+    local current_requirements=$(sha1sum "$PMM_REQUIREMENTS_FILE" | awk '{print $1}')
+    local new_requirements=$(sha1sum "$PMM_REQUIREMENTS_FILE" | awk '{print $1}')
+    if [ "$current_requirements" != "$new_requirements" ] || [ "$force_update" = true ]; then
+        echo "=== Requirements changed, updating venv ==="
+        "$PMM_VENV_PATH/bin/python3" "$PMM_VENV_PATH/bin/pip" install -r "$PMM_REQUIREMENTS_FILE"
+    fi
+}
+
+# Restart the PMM service
+restart_service() {
+    echo "=== Restarting PMM Service ==="
+    sudo systemctl restart "$PMM_SERVICE_NAME"
+    local new_version=$(cat "$PMM_VERSION_FILE")
+    echo "=== Updated to $new_version on $branch"
+}
+
+# Main script execution
+check_pmm_installation
+update_pmm
+update_venv
+restart_service
