@@ -1,54 +1,65 @@
 #!/bin/bash
+set -e
+set -o pipefail
 
-force=${1:false}
+force_update=${1:-false}
 
-# Get Current User
-uid=$(id -u)
+# Constants
+QBM_PATH="/opt/QbitManage"
+QBM_VENV_PATH="/opt/.venv/qbm-venv"
+QBM_SERVICE_NAME="qbmanage"
+QBM_UPSTREAM_GIT_REMOTE="origin"
+QBM_VERSION_FILE="$QBM_PATH/VERSION"
+QBM_REQUIREMENTS_FILE="$QBM_PATH/requirements.txt"
+CURRENT_UID=$(id -u)
 
-# Set Variables
-qbmPath="/opt/QbitManage"
-qbmVenvName="qbit-venv"
-qbmServiceName="qbmanage"
-qbmUpstreamGitRemote="origin"
-
-# Create Paths
-qbmVersionFile="$qbmPath/VERSION"
-qbmRequirementsFile="$qbmPath/requirements.txt"
-qbmVenvPath="$qbmPath"/"$qbmVenvName"
-currentVersion=$(cat "$qbmVersionFile")
-currentRequirements=$(sha1sum "$qbmRequirementsFile" | awk '{print $1}')
-
-# Check if qbm is installed & Get Repo Owner
-# Check if user executing script owns qbm Repo
-if [ -d "$qbmPath" ]; then
-    qbmRepoOwner=$(stat -c '%u' "$qbmPath")
-    if [ "$qbmRepoOwner" != "$uid" ]; then
-        echo "QbitManage folder does exist but you [$uid] do not own the repo. Please run this script as the user that owns the repo [$qbmRepoOwner]"
+# Check if QBM is installed and if the current user owns it
+check_qbm_installation() {
+    if [ -d "$QBM_PATH" ]; then
+        local qbm_repo_owner=$(stat -c '%u' "$QBM_PATH")
+        if [ "$qbm_repo_owner" != "$CURRENT_UID" ]; then
+            echo "You do not own the QbitManage repo. Please run this script as the user that owns the repo [$qbm_repo_owner]."
+            exit 1
+        fi
+    else
+        echo "QbitManage folder does not exist. Please install QbitManage before running this script."
         exit 1
     fi
-else
-    echo "QbitManage folder does not exist. Please install QbitManage before running this script."
-    exit 1
-fi
+}
 
-# Get current Branch
-branch=$(git -C "$qbmPath" rev-parse --abbrev-ref HEAD)
-echo "Current Branch: $branch. Checking for updates..."
-git -C "$qbmPath" fetch
-echo "force update is:$force"
-if [ "$(git -C "$qbmPath" rev-parse HEAD)" = "$(git -C "$qbmPath" rev-parse @'{u}')" ] && [ "$force" != true ]; then
-    echo "=== Already up to date $currentVersion on $branch ==="
-    exit 0
-fi
+# Update QBM if necessary
+update_qbm() {
+    local current_branch=$(git -C "$QBM_PATH" rev-parse --abbrev-ref HEAD)
+    echo "Current Branch: $current_branch. Checking for updates..."
+    git -C "$QBM_PATH" fetch
+    if [ "$(git -C "$QBM_PATH" rev-parse HEAD)" = "$(git -C "$QBM_PATH" rev-parse @'{u}')" ] && [ "$force_update" != true ]; then
+        local current_version=$(cat "$QBM_VERSION_FILE")
+        echo "=== Already up to date $current_version on $current_branch ==="
+        exit 0
+    fi
+    git -C "$QBM_PATH" reset --hard "$QBM_UPSTREAM_GIT_REMOTE/$current_branch"
+}
 
-git -C "$qbmPath" reset --hard "$qbmUpstreamGitRemote"/"$branch"
-newVersion=$(cat "$qbmVersionFile")
-newRequirements=$(sha1sum "$qbmRequirementsFile" | awk '{print $1}')
-if [ "$currentRequirements" != "$newRequirements" ] || [ "$force" = true ]; then
-    echo "=== Requirements changed, updating venv ==="
-    "$qbmVenvPath"/bin/python3 "$qbmVenvPath"/bin/pip install -r "$qbmRequirementsFile"
-fi
-echo "=== Restarting qbm Service ==="
-sudo systemctl restart "$qbmServiceName"
-echo "=== Updated from $currentVersion to $newVersion on $branch"
-exit 0
+# Update virtual environment if requirements have changed
+update_venv() {
+    local current_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
+    local new_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
+    if [ "$current_requirements" != "$new_requirements" ] || [ "$force_update" = true ]; then
+        echo "=== Requirements changed, updating venv ==="
+        "$QBM_VENV_PATH/bin/python" "$QBM_VENV_PATH/bin/pip" install -r "$QBM_REQUIREMENTS_FILE"
+    fi
+}
+
+# Restart the QBM service
+restart_service() {
+    echo "=== Restarting QBM Service ==="
+    sudo systemctl restart "$QBM_SERVICE_NAME"
+    local new_version=$(cat "$QBM_VERSION_FILE")
+    echo "=== Updated to $new_version on $branch"
+}
+
+# Main script execution
+check_qbm_installation
+update_qbm
+update_venv
+restart_service
