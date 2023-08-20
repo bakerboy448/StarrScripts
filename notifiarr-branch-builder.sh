@@ -146,17 +146,17 @@ sudo systemctl start notifiarr
 
 # Check if the service started successfully
 if [[ $? -eq 0 ]]; then
-    logger "Notifiarr service started successfully"
+    echo "Notifiarr service started successfully"
 
     # Check the status of the service
     sudo systemctl is-active --quiet notifiarr
     if [[ $? -eq 0 ]]; then
-        logger "Notifiarr service is currently running"
+        echo "Notifiarr service is currently running"
     else
-        logger "Notifiarr service is not running"
+        echo "Notifiarr service is not running"
     fi
 else
-    logger "Failed to start Notifiarr service"
+    echo "Failed to start Notifiarr service"
 fi
 
 # Exit the script
