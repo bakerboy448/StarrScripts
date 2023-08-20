@@ -4,6 +4,7 @@ torrentclientname="Qbit"
 usenetclientname="SABnzbd"
 xseed_host="127.0.0.1"
 xseed_port="2468"
+log_file="/home/bakerboy448/xseed_db.log"
 
 # Function to send request to cross-seed
 cross_seed_request() {
@@ -11,6 +12,16 @@ cross_seed_request() {
     local data=$2
     curl --silent --output /dev/null --write-out "%{http_code}" -XPOST http://"$xseed_host":"$xseed_port"/api/"$endpoint" --data-urlencode "$data"
 }
+
+# Create the log file if it doesn't exist
+[ ! -f "$log_file" ] && touch "$log_file"
+
+# Check if the downloadID exists in the log file
+grep -qF "$downloadID" "$log_file"
+if [ $? -eq 0 ]; then
+    echo "DownloadID $downloadID has already been processed. Skipping..."
+    exit 0
+fi
 
 # Handle Unknown Event Type
 [ -z "$eventType" ] && echo "Unknown Event Type. Failing." && exit 1
@@ -46,7 +57,7 @@ esac
 
 
 # Handle Cross Seed Response
-[ "$xseed_resp" == "204" ] && echo "Success. cross-seed search triggered by $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath" && exit 0
+[ "$xseed_resp" == "204" ] && echo "Success. cross-seed search triggered by $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath" && echo "$downloadID" >> "$log_file" && exit 0
 
 echo "cross-seed webhook failed - HTTP Code $xseed_resp from $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath"
 exit 1
