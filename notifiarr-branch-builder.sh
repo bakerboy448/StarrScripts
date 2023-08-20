@@ -1,5 +1,27 @@
 #!/bin/bash
 
+# Check if Golang is installed, install if not
+if ! command -v go &> /dev/null; then
+    read -p "Golang is not installed. Do you want to install it? [Y/n] " go_install_choice
+    if [[ "$go_install_choice" == [Yy]* ]]; then
+        sudo apt update && sudo apt install -y golang || handle_error "Failed to install Golang."
+    else
+        echo "Golang is required for this script. Exiting."
+        exit 1
+    fi
+fi
+
+# Check if Make is installed, install if not
+if ! command -v make &> /dev/null; then
+    read -p "Make is not installed. Do you want to install it? [Y/n] " make_install_choice
+    if [[ "$make_install_choice" == [Yy]* ]]; then
+        sudo apt update && sudo apt install -y make || handle_error "Failed to install Make."
+    else
+        echo "Make is required for this script. Exiting."
+        exit 1
+    fi
+fi
+
 # Define variables
 repo_url="https://github.com/Notifiarr/notifiarr.git"
 repo_dir="/home/bakerboy448/notifiarr"
