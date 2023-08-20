@@ -94,7 +94,7 @@ fi
 if [[ ! -d "$repo_dir" ]]; then
     git clone "$repo_url" "$repo_dir" || handle_error "Failed to clone repository."
 else
-    git -C "$repo_dir" fetch --all || handle_error "Failed to fetch updates from remote."
+    git -C "$repo_dir" fetch --all --prune || handle_error "Failed to fetch updates from remote."
 fi
 
 # Get the current branch
@@ -139,7 +139,25 @@ if [[ -f "$bin_path" ]]; then
     sudo mv "$bin_path" "$repo_dir".old && echo "Old binary moved to $repo_dir.old"
 fi
 
-sudo mv "$source_path" "$bin_path" && echo "New binary moved to $bin_path"
+sudo mv "$repo_dir/notifiarr" "$bin_path" && echo "New binary moved to $bin_path"
 
 # Start the service again
 sudo systemctl start notifiarr
+
+# Check if the service started successfully
+if [[ $? -eq 0 ]]; then
+    logger "Notifiarr service started successfully"
+
+    # Check the status of the service
+    sudo systemctl is-active --quiet notifiarr
+    if [[ $? -eq 0 ]]; then
+        logger "Notifiarr service is currently running"
+    else
+        logger "Notifiarr service is not running"
+    fi
+else
+    logger "Failed to start Notifiarr service"
+fi
+
+# Exit the script
+exit 0
