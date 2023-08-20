@@ -4,7 +4,7 @@ torrentclientname="Qbit"
 usenetclientname="SABnzbd"
 xseed_host="127.0.0.1"
 xseed_port="2468"
-log_file="/home/bakerboy448/xseed_db.log"
+log_file="/data/media/.config/xseed_db.log"
 
 # Function to send request to cross-seed
 cross_seed_request() {
