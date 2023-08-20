@@ -17,9 +17,10 @@ cross_seed_request() {
 [ ! -f "$log_file" ] && touch "$log_file"
 
 # Check if the downloadID exists in the log file
-grep -qF "$downloadID" "$log_file"
+unique_id="${downloadID}-${clientID}"
+grep -qF "$unique_id" "$log_file"
 if [ $? -eq 0 ]; then
-    echo "DownloadID $downloadID has already been processed. Skipping..."
+    echo "UniqueDownloadID $unique_id has already been processed. Skipping..."
     exit 0
 fi
 
@@ -57,7 +58,7 @@ esac
 
 
 # Handle Cross Seed Response
-[ "$xseed_resp" == "204" ] && echo "Success. cross-seed search triggered by $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath" && echo "$downloadID" >> "$log_file" && exit 0
+[ "$xseed_resp" == "204" ] && echo "Success. cross-seed search triggered by $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath" && echo "$UniqueDownloadID" >> "$log_file" && exit 0
 
 echo "cross-seed webhook failed - HTTP Code $xseed_resp from $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath"
 exit 1
