@@ -41,6 +41,13 @@ if ! command -v make &>/dev/null; then
     fi
 fi
 
+# Default parameter values
+repo_url="https://github.com/Notifiarr/notifiarr.git"
+repo_dir="/home/bakerboy448/notifiarr"
+bin_path="/usr/bin/notifiarr"
+notifiarruser="notifiarr"
+branch="master"
+
 # Parse command line options
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -74,12 +81,6 @@ while [[ $# -gt 0 ]]; do
     esac
     shift
 done
-
-# Function to display an error message and exit
-handle_error() {
-    echo "Error: $1"
-    exit 1
-}
 
 # Check if user wants to reinstall using apt
 read -p "Do you want to reinstall Notifiarr using apt? [Y/n] " apt_choice
@@ -129,7 +130,7 @@ git -C "$repo_dir" pull || handle_error "Failed to pull latest changes."
 make --directory="$repo_dir" || handle_error "Failed to compile."
 
 # Change owner of the compiled binary
-sudo chown "$notifiarruser":"$notifiarruser" "$source_path"
+sudo chown "$notifiarruser":"$notifiarruser" "$bin_path"
 echo "Stopping notifiarr..."
 sudo systemctl stop notifiarr
 
