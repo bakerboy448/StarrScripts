@@ -14,8 +14,8 @@ display_help() {
     echo "  --repo-url URL        Set the repository URL (default: https://github.com/Notifiarr/notifiarr.git)"
     echo "  --repo-dir DIR        Set the repository directory (default: /home/bakerboy448/notifiarr)"
     echo "  --bin-path PATH       Set the binary path (default: /usr/bin/notifiarr)"
-    echo "  --notifiarruser USER  Set the Notifiarr user (default: notifiarr)"
     echo "  --branch BRANCH       Set the branch (default: master)"
+    echo "  --reinstall-apt       Reinstall Notifiarr using apt without prompting."
     exit 0
 }
 
@@ -43,10 +43,10 @@ fi
 
 # Default parameter values
 repo_url="https://github.com/Notifiarr/notifiarr.git"
-repo_dir="/home/bakerboy448/notifiarr"
+repo_dir="/opt/notifiarr-repo"
 bin_path="/usr/bin/notifiarr"
-notifiarruser="notifiarr"
 branch="master"
+apt_reinstall=false
 
 # Parse command line options
 while [[ $# -gt 0 ]]; do
@@ -66,14 +66,14 @@ while [[ $# -gt 0 ]]; do
         bin_path="$2"
         shift
         ;;
-    --notifiarruser)
-        notifiarruser="$2"
-        shift
-        ;;
     --branch)
         branch="$2"
         shift
         ;;
+    --reinstall-apt)
+        apt_reinstall=true
+    ;;
+
     *)
         echo "Invalid option: $1. Use -h for help."
         exit 1
@@ -83,9 +83,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if user wants to reinstall using apt
-read -p "Do you want to reinstall Notifiarr using apt? [Y/n] " apt_choice
+if [[ $apt_reinstall == true || ( $apt_reinstall == false && $(read -p "Do you want to reinstall Notifiarr using apt? [Y/n] " apt_choice; echo "$apt_choice") == [Yy]* ) ]]; then
 
-if [[ "$apt_choice" == [Yy]* ]]; then
     sudo apt update && sudo apt install --reinstall notifiarr || handle_error "Failed to reinstall Notifiarr using apt."
     exit 0
 fi
