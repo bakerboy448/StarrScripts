@@ -29,7 +29,7 @@ check_qbm_installation() {
 
 # Update QBM if necessary
 update_qbm() {
-    local current_branch=$(git -C "$QBM_PATH" rev-parse --abbrev-ref HEAD)
+    current_branch=$(git -C "$QBM_PATH" rev-parse --abbrev-ref HEAD)
     echo "Current Branch: $current_branch. Checking for updates..."
     git -C "$QBM_PATH" fetch
     if [ "$(git -C "$QBM_PATH" rev-parse HEAD)" = "$(git -C "$QBM_PATH" rev-parse @'{u}')" ] && [ "$force_update" != true ]; then
@@ -55,7 +55,7 @@ restart_service() {
     echo "=== Restarting QBM Service ==="
     sudo systemctl restart "$QBM_SERVICE_NAME"
     local new_version=$(cat "$QBM_VERSION_FILE")
-    echo "=== Updated to $new_version on $branch"
+    echo "=== Updated to $new_version on $current_branch"
 }
 
 # Main script execution

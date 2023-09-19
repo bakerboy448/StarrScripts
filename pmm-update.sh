@@ -30,7 +30,7 @@ check_pmm_installation() {
 
 # Update PMM if necessary
 update_pmm() {
-    local current_branch=$(git -C "$PMM_PATH" rev-parse --abbrev-ref HEAD)
+    current_branch=$(git -C "$PMM_PATH" rev-parse --abbrev-ref HEAD)
     echo "Current Branch: $current_branch. Checking for updates..."
     git -C "$PMM_PATH" fetch
     if [ "$(git -C "$PMM_PATH" rev-parse HEAD)" = "$(git -C "$PMM_PATH" rev-parse @'{u}')" ] && [ "$force_update" != true ]; then
@@ -56,7 +56,7 @@ restart_service() {
     echo "=== Restarting PMM Service ==="
     sudo systemctl restart "$PMM_SERVICE_NAME"
     local new_version=$(cat "$PMM_VERSION_FILE")
-    echo "=== Updated to $new_version on $branch"
+    echo "=== Updated to $new_version on $current_branch"
 }
 
 # Main script execution
