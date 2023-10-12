@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH=$PATH:/usr/local/go/bin
 
 # Function to display an error message and exit
 handle_error() {
