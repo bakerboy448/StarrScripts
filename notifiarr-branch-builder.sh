@@ -19,28 +19,29 @@ display_help() {
     exit 0
 }
 
+#TODO Fix this later
 # Check if Golang is installed, install if not
-if ! command -v go &>/dev/null; then
-    read -p "Golang is not installed. Do you want to install it? [Y/n] " go_install_choice
-    if [[ "$go_install_choice" == [Yy]* ]]; then
-        # Download Go tarball to /tmp directory
-        if curl -o /tmp/go1.21.3.linux-amd64.tar.gz https://go.dev/dl/go1.21.3.linux-amd64.tar.gz; then
-            # Remove any existing Go installation, extract Go, update PATH, and check Go version
-            sudo rm -rf /usr/local/go && \
-            sudo tar -C /usr/local -xzf /tmp/go1.21.3.linux-amd64.tar.gz && \
-            echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc && \
-            source ~/.bashrc && \
-            go version && \
-            rm /tmp/go1.21.3.linux-amd64.tar.gz
-        else
-            echo "Failed to download Golang."
-            exit 1
-        fi
-    else
-        echo "Golang is required for this script. Exiting."
-        exit 1
-    fi
-fi
+#if ! command -v go &>/dev/null; then
+#    read -p "Golang is not installed. Do you want to install it? [Y/n] " go_install_choice
+#    if [[ "$go_install_choice" == [Yy]* ]]; then
+#        # Download Go tarball to /tmp directory
+#        if curl -o /tmp/go1.21.3.linux-amd64.tar.gz https://go.dev/dl/go1.21.3.linux-amd64.tar.gz; then
+#            # Remove any existing Go installation, extract Go, update PATH, and check Go version
+#            sudo rm -rf /usr/local/go && \
+#            sudo tar -C /usr/local -xzf /tmp/go1.21.3.linux-amd64.tar.gz && \
+#            echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc && \
+#            source ~/.bashrc && \
+#            go version && \
+#            rm /tmp/go1.21.3.linux-amd64.tar.gz
+#        else
+#            echo "Failed to download Golang."
+#            exit 1
+#        fi
+#    else
+#        echo "Golang is required for this script. Exiting."
+#        exit 1
+#    fi
+#fi
 
 # Check if Make is installed, install if not
 if ! command -v make &>/dev/null; then
