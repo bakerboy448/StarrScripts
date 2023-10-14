@@ -6,6 +6,32 @@ xseed_host="127.0.0.1"
 xseed_port="2468"
 log_file="/data/media/.config/xseed_db.log"
 
+# Determine app and set variables
+if [ -n "$radarr_eventtype" ]; then
+    app="radarr"
+    clientID=${radarr_download_client}
+    downloadID=${radarr_download_id}
+    filePath=${radarr_moviefile_path}
+    eventType=${radarr_eventtype}
+elif [ -n "$sonarr_eventtype" ]; then
+    app="sonarr"
+    clientID=${sonarr_download_client}
+    downloadID=${sonarr_download_id}
+    filePath=${sonarr_series_path}
+    folderPath=${sonarr_episodefile_sourcefolder}
+    eventType=${sonarr_eventtype}
+elif [ -n "$Lidarr_EventType" ]; then
+    app="lidarr"
+    clientID=${lidarr_Download_Client}
+    filePath=${lidarr_Artist_Path}
+    downloadID=${lidarr_Download_Id}
+    eventType=${lidarr_EventType}
+else
+    echo "Unknown Event Type. Failing."
+    exit 1
+fi
+echo "$app detected with event type $eventType"
+
 # Function to send request to cross-seed
 cross_seed_request() {
     local endpoint=$1
