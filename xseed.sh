@@ -59,7 +59,7 @@ fi
 # Ensure we have necessary details
 [ -z "$downloadID" ] && echo "DownloadID is empty from $app. Skipping cross-seed search. DownloadClient: $clientID and DownloadId: $downloadID" && exit 0
 [ -z "$filePath" ] && echo "FilePath is empty from $app. Skipping cross-seed search. DownloadClient: $clientID and FilePath: $filePath" && exit 0
-[ -z "$folderPath" ] && echo "FolderPath is empty from $app. Skipping cross-seed search. DownloadClient: $clientID and FolderPath: $folderPath" && exit 0
+# [ -z "$folderPath" ] && echo "FolderPath is empty from $app. Skipping cross-seed search. DownloadClient: $clientID and FolderPath: $folderPath" && exit 0
 
 # Handle client based operations
 case "$clientID" in
