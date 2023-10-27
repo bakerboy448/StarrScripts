@@ -27,7 +27,7 @@ elif [ -n "$Lidarr_EventType" ]; then
     downloadID=${lidarr_Download_Id}
     eventType=${lidarr_EventType}
 else
-    echo "Unknown Event Type. Failing."
+    echo "|WARN| Unknown Event Type. Failing."
     exit 1
 fi
 echo "$app detected with event type $eventType"
@@ -51,7 +51,7 @@ if [ $? -eq 0 ]; then
 fi
 
 # Handle Unknown Event Type
-[ -z "$eventType" ] && echo "Unknown Event Type. Failing." && exit 1
+[ -z "$eventType" ] && echo "|WARN| Unknown Event Type. Failing." && exit 1
 
 # Handle Test Event
 [ "$eventType" == "Test" ] && echo "Test passed for $app. DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath" && exit 0
@@ -77,7 +77,7 @@ case "$clientID" in
         fi
         ;;
     *)
-        echo "Client $clientID does not match configured Client of $torrentclientname or $usenetclientname. Skipping..."
+        echo "|WARN| Client $clientID does not match configured Client of $torrentclientname or $usenetclientname. Skipping..."
         exit 0
         ;;
 esac
@@ -86,5 +86,5 @@ esac
 # Handle Cross Seed Response
 [ "$xseed_resp" == "204" ] && echo "Success. cross-seed search triggered by $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath" && echo "$UniqueDownloadID" >> "$log_file" && exit 0
 
-echo "cross-seed webhook failed - HTTP Code $xseed_resp from $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath"
+echo "|WARN| cross-seed webhook failed - HTTP Code $xseed_resp from $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath"
 exit 1
