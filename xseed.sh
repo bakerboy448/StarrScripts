@@ -20,12 +20,18 @@ elif [ -n "$sonarr_eventtype" ]; then
     filePath="$sonarr_series_path"
     folderPath="$sonarr_episodefile_sourcefolder"
     eventType="$sonarr_eventtype"
-elif [ -n "$Lidarr_EventType" ]; then
+elif [ -n "$lidarr_eventtype" ]; then
     app="lidarr"
-    clientID="$lidarr_Download_Client"
-    filePath="$lidarr_Artist_Path"
-    downloadID="$lidarr_Download_Id"
-    eventType="$lidarr_EventType"
+    clientID="$lidarr_download_client"
+    filePath="$lidarr_artist_path"
+    downloadID="$lidarr_download_id"
+    eventType="$lidarr_eventtype"
+elif [ -n "$readarr_eventtype" ]; then
+    app="readarr"
+    clientID="$readarr_download_client"
+    filePath="$readarr_author_path"
+    downloadID="$readarr_download_id"
+    eventType="$readarr_eventtype"
 else
     echo "|WARN| Unknown Event Type. Failing."
     exit 1
