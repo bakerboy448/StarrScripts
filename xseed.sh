@@ -67,7 +67,7 @@ case "$clientID" in
             echo "Client $usenetclientname skipped search for FolderPath $folderPath due to being a SeasonPack for Usenet"
             exit 0
         else
-            echo "Client $usenetclientname triggered data search for DownloadId $downloadID with FilePath $filePath and FolderPath $folderPath"
+            echo "Client $usenetclientname triggered data search for DownloadId $downloadID using FilePath $filePath with FolderPath $folderPath"
             xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
         fi
         ;;
@@ -79,10 +79,10 @@ esac
 
 # Handle Cross Seed Response
 if [ "$xseed_resp" == "204" ]; then
-    echo "Success. Cross-seed search triggered by $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath"
+    echo "Success. Cross-seed search triggered by $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath with FolderPath $folderPath"
     echo "$unique_id" >> "$log_file"
     exit 0
 else
-    echo "|WARN| Cross-seed webhook failed - HTTP Code $xseed_resp from $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath"
+    echo "|WARN| Cross-seed webhook failed - HTTP Code $xseed_resp from $app for DownloadClient: $clientID, DownloadId: $downloadID and FilePath: $filePath with FolderPath $folderPath"
     exit 1
 fi
