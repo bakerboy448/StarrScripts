@@ -84,7 +84,7 @@ case "$clientID" in
             fi
         else
             echo "Client $usenetclientname skipped search for FilePath $filePath due to being not a single file query from $app"
-            exist 0
+            exit 0
         fi
         ;;
     *)
