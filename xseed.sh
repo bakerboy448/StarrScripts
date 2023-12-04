@@ -2,7 +2,7 @@
 
 torrentclientname="Qbit"
 usenetclientname="SABnzbd"
-xseed_host="cross-seed"
+xseed_host="crossseed"
 xseed_port="2468"
 log_file="/data/media/.config/xseed_db.log"
 xseed_apikey=""
