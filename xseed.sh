@@ -33,13 +33,13 @@ elif [ -n "$sonarr_eventtype" ]; then
 elif [ -n "$Lidarr_EventType" ]; then
     app="lidarr"
     # shellcheck disable=SC2154
-    clientID="$lidarr_Download_Client"
+    clientID="$Lidarr_Download_Client"
     # shellcheck disable=SC2154
-    filePath="$lidarr_Artist_Path"
+    filePath="$Lidarr_Artist_Path"
     # shellcheck disable=SC2154
-    downloadID="$lidarr_Download_Id"
+    downloadID="$Lidarr_Download_Id"
     # shellcheck disable=SC2154
-    eventType="$lidarr_EventType"
+    eventType="$Lidarr_EventType"
 else
     echo "|WARN| Unknown Event Type. Failing."
     exit 1
