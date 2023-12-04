@@ -2,7 +2,7 @@
 
 torrentclientname="Qbit"
 usenetclientname="SABnzbd"
-xseed_host="127.0.0.1"
+xseed_host="cross-seed"
 xseed_port="2468"
 log_file="/data/media/.config/xseed_db.log"
 
@@ -44,7 +44,14 @@ cross_seed_request() {
 
 # Check if the downloadID exists in the log file
 unique_id="${downloadID}-${clientID}"
+# if id is blank (i.e. manual import skip)
+if [ -z "$unique_id" ]; then
+    echo "UniqueDownloadID $unique_id is blanking. Ignoring."
+    exit 0
+fi
+# If unique_id is not blank, then proceed with checking the id
 grep -qF "$unique_id" "$log_file" && echo "UniqueDownloadID $unique_id has already been processed. Skipping..." && exit 0
+
 
 # Handle Unknown Event Type
 [ -z "$eventType" ] && echo "|WARN| Unknown Event Type. Failing." && exit 1
