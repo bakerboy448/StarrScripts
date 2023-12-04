@@ -80,7 +80,6 @@ fi
 # If unique_id is not blank, then proceed with checking the id
 grep -qF "$unique_id" "$log_file" && echo "UniqueDownloadID $unique_id has already been processed. Skipping..." && exit 0
 
-
 # Handle Unknown Event Type
 [ -z "$eventType" ] && echo "|WARN| Unknown Event Type. Failing." && exit 1
 
