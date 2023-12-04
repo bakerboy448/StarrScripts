@@ -40,6 +40,16 @@ elif [ -n "$Lidarr_EventType" ]; then
     downloadID="$Lidarr_Download_Id"
     # shellcheck disable=SC2154
     eventType="$Lidarr_EventType"
+elif [ -n "$Readarr_EventType" ]; then
+    app="readarr"
+    # shellcheck disable=SC2154
+    clientID="$Readarr_Download_Client"
+    # shellcheck disable=SC2154
+    filePath="$Readarr_Author_Path"
+    # shellcheck disable=SC2154
+    downloadID="$Readarr_Download_Id"
+    # shellcheck disable=SC2154
+    eventType="$Readarr_EventType"
 else
     echo "|WARN| Unknown Event Type. Failing."
     exit 1
