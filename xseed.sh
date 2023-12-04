@@ -25,7 +25,7 @@ elif [ -n "$sonarr_eventtype" ]; then
     # shellcheck disable=SC2154
     downloadID="$sonarr_download_id"
     # shellcheck disable=SC2154
-    filePath="$sonarr_series_path"
+    filePath="$sonarr_episodefile_path"
     # shellcheck disable=SC2154
     folderPath="$sonarr_episodefile_sourcefolder"
     # shellcheck disable=SC2154
