@@ -5,26 +5,40 @@ usenetclientname="SABnzbd"
 xseed_host="cross-seed"
 xseed_port="2468"
 log_file="/data/media/.config/xseed_db.log"
+xseed_apikey=""
 
 # Determine app and set variables
 if [ -n "$radarr_eventtype" ]; then
     app="radarr"
+    # shellcheck disable=SC2154
     clientID="$radarr_download_client"
+    # shellcheck disable=SC2154
     downloadID="$radarr_download_id"
+    # shellcheck disable=SC2154
     filePath="$radarr_moviefile_path"
+    # shellcheck disable=SC2154
     eventType="$radarr_eventtype"
 elif [ -n "$sonarr_eventtype" ]; then
     app="sonarr"
+    # shellcheck disable=SC2154
     clientID="$sonarr_download_client"
+    # shellcheck disable=SC2154
     downloadID="$sonarr_download_id"
+    # shellcheck disable=SC2154
     filePath="$sonarr_series_path"
+    # shellcheck disable=SC2154
     folderPath="$sonarr_episodefile_sourcefolder"
+    # shellcheck disable=SC2154
     eventType="$sonarr_eventtype"
 elif [ -n "$Lidarr_EventType" ]; then
     app="lidarr"
+    # shellcheck disable=SC2154
     clientID="$lidarr_Download_Client"
+    # shellcheck disable=SC2154
     filePath="$lidarr_Artist_Path"
+    # shellcheck disable=SC2154
     downloadID="$lidarr_Download_Id"
+    # shellcheck disable=SC2154
     eventType="$lidarr_EventType"
 else
     echo "|WARN| Unknown Event Type. Failing."
@@ -36,7 +50,11 @@ echo "$app detected with event type $eventType"
 cross_seed_request() {
     local endpoint="$1"
     local data="$2"
-    curl --silent --output /dev/null --write-out "%{http_code}" -X POST "http://$xseed_host:$xseed_port/api/$endpoint" --data-urlencode "$data"
+    if [  -n "$xseed_apikey" ]; then
+        curl --silent --output /dev/null --write-out "%{http_code}" -X POST "http://$xseed_host:$xseed_port/api/$endpoint" -H "X-Api-Key: $xseed_apikey" --data-urlencode "$data"
+    else
+        curl --silent --output /dev/null --write-out "%{http_code}" -X POST "http://$xseed_host:$xseed_port/api/$endpoint" --data-urlencode "$data"
+    fi
 }
 
 # Create the log file if it doesn't exist
