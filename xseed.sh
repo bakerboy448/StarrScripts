@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Configure variables to fit your setup
+# Assumes download clients have the same name across all Starrs using this script.
 torrentclientname="Qbit"
 usenetclientname="SABnzbd"
 xseed_host="crossseed"
