@@ -4,11 +4,15 @@
 # Assumes download clients have the same name across all Starrs using this script.
 # See https://www.cross-seed.org/docs/basics/faq-troubleshooting#searching-media-libraries-vs-torrent-data-data-based-searching
 # For how to configure Cross Seed with Starr Data Matching
+# Download Client Names in Starr
 torrentclientname="Qbit"
 usenetclientname="SABnzbd"
+# Cross seed host (ip or container name) and port information
 xseed_host="crossseed"
 xseed_port="2468"
+# Set a path to store this script's database of prior searched
 log_file="/data/media/.config/xseed_db.log"
+# Optional; Set to "" to ignore
 xseed_apikey=""
 
 # Determine app and set variables
