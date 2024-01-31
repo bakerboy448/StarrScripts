@@ -2,6 +2,8 @@
 
 # Configure variables to fit your setup
 # Assumes download clients have the same name across all Starrs using this script.
+# See https://www.cross-seed.org/docs/basics/faq-troubleshooting#searching-media-libraries-vs-torrent-data-data-based-searching
+# For how to configure Cross Seed with Starr Data Matching
 torrentclientname="Qbit"
 usenetclientname="SABnzbd"
 xseed_host="crossseed"
