@@ -6,9 +6,10 @@ TARGET_BRANCH="master"
 COMMIT_BRANCH="update-wiki-supported-indexers"
 
 # Clone the repository
-git clone "$REPO_URL"
-cd Wiki
 
+#git clone "$REPO_URL"
+#cd Wiki
+cd ~/_development/servarr.wiki
 # Fetch latest updates
 git fetch origin
 
