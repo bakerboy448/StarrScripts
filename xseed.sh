@@ -103,6 +103,12 @@ case "$clientID" in
     "$torrentclientname")
         echo "Client $torrentclientname triggered id search for DownloadId $downloadID with FilePath $filePath and FolderPath $folderPath"
         xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID")
+        
+        if [ "$xseed_resp" != "204" ]; then
+            echo "Client $torrentclientname triggered data search for DownloadId $downloadID using FilePath $filePath with FolderPath $folderPath"
+            sleep 15
+            xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
+        fi
         ;;
     "$usenetclientname")
         if [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]]; then
