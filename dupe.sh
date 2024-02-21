@@ -12,7 +12,7 @@ media2_hash_db="/home/bakerboy448/jdupes_hashdb_media2"
 
 timestamp=$(date +"%Y-%m-%d %H:%M:%S")
 echo "[$timestamp] Duplicate search started for $source_dir and $destination_dir." >> "$output_log"
-$jdupes_command $exclude_dirs $include_ext -L -r -H -y "$hash_db" "$source_dir" "$destination_dir" > "$output_log"
+$jdupes_command $exclude_dirs $include_ext -L -r -H -y "$hash_db" "$source_dir" "$destination_dir" >> "$output_log"
 timestamp=$(date +"%Y-%m-%d %H:%M:%S")
 echo "[$timestamp] Duplicate search completed for $source_dir and $destination_dir." >> "$output_log"
 
