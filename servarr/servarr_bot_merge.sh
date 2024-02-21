@@ -17,7 +17,7 @@ git pull origin $TARGET_BRANCH
 
 # Checkout to the branch containing the commit you want to rebase
 git checkout $COMMIT_BRANCH
-
+git pull origin $COMMIT_BRANCH
 # Rebase the commit onto the target branch
 git rebase origin/$TARGET_BRANCH
 
