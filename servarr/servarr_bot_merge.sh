@@ -33,6 +33,8 @@ if [ $? -eq 0 ]; then
     # Now push the updated TARGET_BRANCH to the remote
     if git push origin $TARGET_BRANCH; then
         echo "Rebase, merge, and push to $TARGET_BRANCH completed successfully."
+        git push origin --delete $COMMIT_BRANCH
+        echo "Deleted Remote Branch $COMMIT_BRANCH"
     else
         echo "Push to $TARGET_BRANCH failed. Please check the remote branch status and resolve any issues."
     fi
