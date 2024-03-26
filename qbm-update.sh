@@ -37,12 +37,12 @@ update_qbm() {
         echo "=== Already up to date $current_version on $current_branch ==="
         exit 0
     fi
+    current_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
     git -C "$QBM_PATH" reset --hard "$QBM_UPSTREAM_GIT_REMOTE/$current_branch"
 }
 
 # Update virtual environment if requirements have changed
 update_venv() {
-    local current_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
     local new_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
     if [ "$current_requirements" != "$new_requirements" ] || [ "$force_update" = true ]; then
         echo "=== Requirements changed, updating venv ==="
