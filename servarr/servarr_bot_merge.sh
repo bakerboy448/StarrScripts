@@ -1,43 +1,52 @@
 #!/bin/bash
 
 # Define variables
-REPO_URL="https://github.com/Servarr/Wiki.git"
+REPO_URL="https://github.com/Servarr/Wiki.git"  # URL for the repository
 TARGET_BRANCH="master"
 COMMIT_BRANCH="update-wiki-supported-indexers"
+REPO_DIR="~/_development/servarr.wiki"
+
+# Function to log messages
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Check and configure git remote
+configure_remote() {
+    # Check if the remote is set and set it if not
+    if git remote | grep -q "origin"; then
+        git remote set-url origin $REPO_URL
+    else
+        git remote add origin $REPO_URL
+    fi
+}
 
 # Navigate to the repository's directory
-cd ~/_development/servarr.wiki
+cd $REPO_DIR || { log "Failed to change directory to $REPO_DIR. Exiting."; exit 1; }
 
-# Fetch the latest updates from the origin
+# Configure git remote
+configure_remote
+
+# Fetch the latest updates from the repository
 git fetch origin
 
-# Ensure the TARGET_BRANCH is up to date with origin
-git checkout $TARGET_BRANCH
-git pull origin $TARGET_BRANCH
+# Checkout and update commit branch from origin
+git checkout $COMMIT_BRANCH || git checkout -b $COMMIT_BRANCH origin/$TARGET_BRANCH
+git pull origin $COMMIT_BRANCH || git pull origin $TARGET_BRANCH
 
-# Checkout to the branch containing the commit you want to rebase
-git checkout $COMMIT_BRANCH
-git pull origin $COMMIT_BRANCH
 # Rebase the commit onto the target branch
-git rebase origin/$TARGET_BRANCH
+if git rebase origin/$TARGET_BRANCH; then
+    log "Rebase successful."
 
-# Check if the rebase was successful
-if [ $? -eq 0 ]; then
-    # Switch back to the target branch
-    git checkout $TARGET_BRANCH
-    
-    # Merge the commit branch into the target branch to bring the rebased commit into target
-    # This is assuming the rebase has made commit branch ahead of target and can be fast-forwarded
-    git merge --ff-only $COMMIT_BRANCH
+    # Push rebased branch to the same repository
+    git push origin $COMMIT_BRANCH -f
 
-    # Now push the updated TARGET_BRANCH to the remote
-    if git push origin $TARGET_BRANCH; then
-        echo "Rebase, merge, and push to $TARGET_BRANCH completed successfully."
-        git push origin --delete $COMMIT_BRANCH
-        echo "Deleted Remote Branch $COMMIT_BRANCH"
+    # Optionally create a pull request if it's a different branch merging scenario
+    if [ "$COMMIT_BRANCH" != "$TARGET_BRANCH" ]; then
+        gh pr create --base $TARGET_BRANCH --head $COMMIT_BRANCH --title "Update $COMMIT_BRANCH" --body "Rebased updates for $COMMIT_BRANCH"
     else
-        echo "Push to $TARGET_BRANCH failed. Please check the remote branch status and resolve any issues."
+        log "Updates are on the target branch, no pull request needed."
     fi
 else
-    echo "Rebase encountered conflicts. Resolve them manually and then continue the rebase process."
+    log "Rebase encountered conflicts. Resolve them manually and then continue the rebase process."
 fi
