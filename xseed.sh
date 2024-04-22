@@ -11,7 +11,7 @@ usenetclientname="SABnzbd"
 xseed_host="crossseed"
 xseed_port="2468"
 # Set a path to store this script's database of prior searched
-log_file="/data/media/.config/xseed_db.log"
+log_file="/.config/xseed_db.log"
 # Optional; Set to "" to ignore
 xseed_apikey=""
 
