@@ -5,7 +5,7 @@ set -o pipefail
 force_update=${1:-false}
 
 # Constants
-QBM_PATH="/opt/QbitManage"
+QBM_PATH="/opt/qbit_manage"
 QBM_VENV_PATH="/opt/.venv/qbm-venv"
 QBM_SERVICE_NAME="qbmanage"
 QBM_UPSTREAM_GIT_REMOTE="origin"
