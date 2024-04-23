@@ -18,4 +18,4 @@ sleep 600
 # -ru = remove unregistered
 # Do not remove orphaned torrents as imports may be in-progress
 # -sl = share limits
-/opt/.venv/qbm-venv/bin/python "$PATH_QBM"/qbit_manage.py -cs -re -cu -tu -ru -sl  -r --config-file /data/media/.config/QbitMngr/config.yml
+/opt/.venv/qbm-venv/bin/python "$PATH_QBM"/qbit_manage.py -cs -re -cu -tu -ru -sl  -r --config-file /.config/QbitMngr/config.yml
