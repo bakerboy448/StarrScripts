@@ -31,7 +31,7 @@ configure_remote
 log "fetching and purning origin"
 git fetch --prune origin
 
-log "checking out and pulling $COMMIT_BRANCH"
+log "checking out and pulling $COMMIT_BRANCH. if not exist creating from origin/$TARGET_BRANCH"
 # Checkout and update commit branch from origin
 git checkout $COMMIT_BRANCH || git checkout -b $COMMIT_BRANCH origin/$TARGET_BRANCH
 git pull origin $COMMIT_BRANCH || git pull origin $TARGET_BRANCH
@@ -44,7 +44,7 @@ if git rebase origin/$TARGET_BRANCH; then
     log "Rebase successful."
 
     # Push rebased branch to the same repository
-    git push origin $COMMIT_BRANCH -f
+    git push origin $TARGET_BRANCH
     log "Commit Branch $COMMIT_BRANCH"
     log "Target Branch $TARGET_BRANCH"
     # Optionally create a pull request if it's a different branch merging scenario
