@@ -31,26 +31,32 @@ configure_remote
 log "fetching and purning origin"
 git fetch --prune origin
 
-log "checking out and pulling $COMMIT_BRANCH. if not exist creating from origin/$TARGET_BRANCH"
-# Checkout and update commit branch from origin
-git checkout $COMMIT_BRANCH || git checkout -b $COMMIT_BRANCH origin/$TARGET_BRANCH
-git pull origin $COMMIT_BRANCH || git pull origin $TARGET_BRANCH
+log "checking out and pulling $COMMIT_BRANCH. Also pulling origin/$TARGET_BRANCH"
+git checkout $TARGET_BRANCH
+git pull origin $TARGET_BRANCH
+git checkout $COMMIT_BRANCH
+git pull origin $COMMIT_BRANCH
 
-# Rebase the commit onto the target branch
 git_branch=$(git branch --show-current)
 log "git branch is $git_branch"
+# Rebase the commit onto the target branch
 log "Rebasing....on origin/$TARGET_BRANCH"
 if git rebase origin/$TARGET_BRANCH; then
     log "Rebase successful."
 
-    # Push rebased branch to the same repository
-    git push origin $TARGET_BRANCH
-    log "Commit Branch $COMMIT_BRANCH"
-    log "Target Branch $TARGET_BRANCH"
-    # Optionally create a pull request if it's a different branch merging scenario
-    if [ "$COMMIT_BRANCH" != "$TARGET_BRANCH" ]; then
-        log "Commit and Target Differ. Creating PR"
-        gh pr create --base $TARGET_BRANCH --head $COMMIT_BRANCH --body "Rebased updates for $COMMIT_BRANCH"
+    # Switch back to the target branch
+    git checkout $TARGET_BRANCH
+
+    # Merge the commit branch into the target branch to bring the rebased commit into target
+    # This is assuming the rebase has made commit branch ahead of target and can be fast-forwarded
+    log "Merging into $COMMIT_BRANCH with --ff-only"
+    git merge --ff-only $COMMIT_BRANCH
+
+    # Now push the updated TARGET_BRANCH to the remote
+    if git push origin $TARGET_BRANCH; then
+        log "Rebase, merge, and push to $TARGET_BRANCH completed successfully."
+        git push origin --delete $COMMIT_BRANCH
+        log "Deleted Remote Branch $COMMIT_BRANCH"
     else
         log "Updates are on the target branch, no pull request needed."
     fi
