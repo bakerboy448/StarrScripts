@@ -28,7 +28,7 @@ cd $REPO_DIR || { log "Failed to change directory to $REPO_DIR. Exiting."; exit 
 configure_remote
 
 # Fetch the latest updates from the repository
-git fetch origin
+git fetch --prune origin
 
 # Checkout and update commit branch from origin
 git checkout $COMMIT_BRANCH || git checkout -b $COMMIT_BRANCH origin/$TARGET_BRANCH
@@ -40,9 +40,11 @@ if git rebase origin/$TARGET_BRANCH; then
 
     # Push rebased branch to the same repository
     git push origin $COMMIT_BRANCH -f
-
+    log "Commit Branch $COMMIT_BRANCH"
+    log "Target Branch $TARGET_BRANCH"
     # Optionally create a pull request if it's a different branch merging scenario
     if [ "$COMMIT_BRANCH" != "$TARGET_BRANCH" ]; then
+        log "Commit and Target Differ. Creating PR"
         gh pr create --base $TARGET_BRANCH --head $COMMIT_BRANCH --title "Update $COMMIT_BRANCH" --body "Rebased updates for $COMMIT_BRANCH"
     else
         log "Updates are on the target branch, no pull request needed."
