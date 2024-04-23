@@ -4,7 +4,7 @@
 REPO_URL="git@github.com:Servarr/Wiki.git"  # URL for the repository
 TARGET_BRANCH="master"
 COMMIT_BRANCH="update-wiki-supported-indexers"
-REPO_DIR="~/_development/servarr.wiki"
+REPO_DIR="/mnt/raid/_development/servarr.wiki"
 
 # Function to log messages
 log() {
