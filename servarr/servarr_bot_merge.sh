@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define variables
-REPO_URL="https://github.com/Servarr/Wiki.git"  # URL for the repository
+REPO_URL="git@github.com:Servarr/Wiki.git"  # URL for the repository
 TARGET_BRANCH="master"
 COMMIT_BRANCH="update-wiki-supported-indexers"
 REPO_DIR="~/_development/servarr.wiki"
