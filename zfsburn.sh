@@ -1,12 +1,9 @@
 #!/bin/bash
 
-# Constants
-VERBOSE=0 # Set this to 1 for trace-level logging, 0 for informational logging
-MAX_FREQ=2
-MAX_HOURLY=2
-MAX_DAILY=1
-MAX_WEEKLY=0
-MAX_MONTHLY=0
+# Load .env file
+set -o allexport
+source ./.env
+set +o allexport0
 
 # Logging function based on verbosity level
 log() {
