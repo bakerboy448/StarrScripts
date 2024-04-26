@@ -12,11 +12,13 @@ if [ -f ".env" ]; then
 fi
 
 # Use environment variables with descriptive default values
-LOCK=${QBIT_MANAGE_LOCK_FILE_PATH:-/var/lock/qbm-qbit.lock}
-PATH_QBM=${QBIT_MANAGE_PATH:-/opt/qbit-manage}
-VENV_PATH=${QBIT_MANAGE_VENV_PATH:-/opt/qbit-manage/.venv}
-CONFIG_PATH=${QBIT_MANAGE_CONFIG_PATH:-/opt/qbit-manage/config.yml}
-QBIT_OPTIONS=${QBIT_MANAGE_OPTIONS:-"-cs -re -cu -tu -ru -sl -r"}
+QBQBM_LOCK=${QBIT_MANAGE_LOCK_FILE_PATH:-/var/lock/qbm-qbit.lock}
+QBQBM_PATH_QBM=${QBIT_MANAGE_PATH:-/opt/qbit-manage}
+QBQBM_VENV_PATH=${QBIT_MANAGE_VENV_PATH:-/opt/qbit-manage/.venv}
+QBQBM_CONFIG_PATH=${QBIT_MANAGE_CONFIG_PATH:-/opt/qbit-manage/config.yml}
+QBQBM_QBIT_OPTIONS=${QBIT_MANAGE_OPTIONS:-"-cs -re -cu -tu -ru -sl -r"}
+QBQBM_SLEEP_TIME=600
+QBQBM_LOCK_TIME=3600
 
 # Function to remove the lock file
 remove_lock() {
@@ -29,14 +31,18 @@ another_instance() {
     exit 1
 }
 
+echo "Acquiring Lock"
 # Acquire a lock to prevent concurrent execution, with a timeout and lease time
-lockfile -r 0 -l 3600 "$LOCK" || another_instance
+lockfile -r 0 -l "$QBQBM_SLEEP_TIME" "$QBQBM_LOCK" || another_instance
 
 # Ensure the lock is removed when the script exits
 trap remove_lock EXIT
 
-# Pause the script to wait for any pending operations (demonstrative purpose)
-sleep 600
+echo "sleeping for $QBQBM_SLEEP_TIME"
+# Pause the script to wait for any pending operations (i.e. Starr Imports)
+
+sleep $QBQBM_SLEEP_TIME
 
 # Execute qbit_manage with configurable options
+echo "Executing Command"
 "$VENV_PATH"/bin/python "$PATH_QBM"/qbit_manage.py "$QBIT_OPTIONS" --config-file "$CONFIG_PATH"
