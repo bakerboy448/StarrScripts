@@ -33,7 +33,7 @@ another_instance() {
 
 echo "Acquiring Lock"
 # Acquire a lock to prevent concurrent execution, with a timeout and lease time
-lockfile -r 0 -l "$QBQBM_SLEEP_TIME" "$QBQBM_LOCK" || another_instance
+lockfile -r 0 -l "$QBQBM_LOCK_TIME" "$QBQBM_LOCK" || another_instance
 
 # Ensure the lock is removed when the script exits
 trap remove_lock EXIT
@@ -45,4 +45,4 @@ sleep $QBQBM_SLEEP_TIME
 
 # Execute qbit_manage with configurable options
 echo "Executing Command"
-"$VENV_PATH"/bin/python "$PATH_QBM"/qbit_manage.py "$QBIT_OPTIONS" --config-file "$CONFIG_PATH"
+"$QBQBM_VENV_PATH"/bin/python "$QBQBM_PATH_QBM"/qbit_manage.py "$QBQBM_QBIT_OPTIONS" --config-file "$QBQBM_CONFIG_PATH"

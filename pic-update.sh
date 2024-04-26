@@ -29,11 +29,11 @@ check_pic_installation() {
 
 # Update Plex-Image-Cleanup if necessary
 update_pic() {
-    local current_branch=$(git -C "$PIC_PATH" rev-parse --abbrev-ref HEAD)
+    current_branch=$(git -C "$PIC_PATH" rev-parse --abbrev-ref HEAD)
     echo "Current Branch: $current_branch. Checking for updates..."
     git -C "$PIC_PATH" fetch
     if [ "$(git -C "$PIC_PATH" rev-parse HEAD)" = "$(git -C "$PIC_PATH" rev-parse @'{u}')" ] && [ "$force_update" != true ]; then
-        local current_version=$(cat "$PIC_VERSION_FILE")
+        current_version=$(cat "$PIC_VERSION_FILE")
         echo "=== Already up to date $current_version on $current_branch ==="
         exit 0
     fi
@@ -42,8 +42,8 @@ update_pic() {
 
 # Update venv if necessary
 update_venv() {
-    local current_requirements=$(sha1sum "$PIC_REQUIREMENTS_FILE" | awk '{print $1}')
-    local new_requirements=$(sha1sum "$PIC_REQUIREMENTS_FILE" | awk '{print $1}')
+    current_requirements=$(sha1sum "$PIC_REQUIREMENTS_FILE" | awk '{print $1}')
+    new_requirements=$(sha1sum "$PIC_REQUIREMENTS_FILE" | awk '{print $1}')
     if [ "$current_requirements" != "$new_requirements" ] || [ "$force_update" = true ]; then
         echo "=== Requirements changed, updating venv ==="
         "$PIC_VENV_PATH/bin/python3" "$PIC_VENV_PATH/bin/pip" install -r "$PIC_REQUIREMENTS_FILE"
@@ -54,7 +54,7 @@ update_venv() {
 restart_service() {
     echo "=== Restarting Plex-Image-Cleanup Service ==="
     sudo systemctl restart "$PIC_SERVICE_NAME"
-    local new_version=$(cat "$PIC_VERSION_FILE")
+    new_version=$(cat "$PIC_VERSION_FILE")
     echo "=== Updated to $new_version on $current_branch ==="
 }
 

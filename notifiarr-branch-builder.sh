@@ -27,7 +27,7 @@ ensure_tool_installed() {
     local tool=$1
     local install_cmd=$2
     if ! command -v "$tool" &>/dev/null; then
-        read -p "$tool is not installed. Do you want to install it? [Y/n] " response
+        read -r -p "$tool is not installed. Do you want to install it? [Y/n] " response
         if [[ "$response" =~ ^[Yy] ]]; then
             eval "$install_cmd" || handle_error "Failed to install $tool."
         else
@@ -47,7 +47,7 @@ apt_reinstall=false
 # Parse command line options
 while [[ $# -gt 0 ]]; do
     case "$1" in
-    -h|--help)
+    -h | --help)
         display_help
         ;;
     --repo-url)
@@ -82,6 +82,7 @@ ensure_tool_installed "make" "sudo apt update && sudo apt install -y make"
 
 # Reinstallation condition handling
 reinstall_notifiarr() {
+    # shellcheck disable=SC2015
     sudo apt update && sudo apt install --reinstall notifiarr || handle_error "Failed to reinstall Notifiarr using apt."
 }
 
@@ -96,13 +97,13 @@ fi
 
 # Branch handling and updating
 current_branch=$(git -C "$repo_dir" rev-parse --abbrev-ref HEAD)
-read -p "Do you want to use the current branch ($current_branch)? [Y/n] " choice
+read -r -p "Do you want to use the current branch ($current_branch)? [Y/n] " choice
 if [[ "$choice" =~ ^[Nn] ]]; then
     branches=$(git -C "$repo_dir" branch -r | sed 's/origin\///;s/* //')
     echo "Available branches:"
     echo "$branches"
     while true; do
-        read -p "Enter the branch name you want to use: " branch
+        read -r -p "Enter the branch name you want to use: " branch
         if [[ $branches =~ $branch ]]; then
             git -C "$repo_dir" checkout "$branch" || handle_error "Failed to checkout branch $branch."
             break
@@ -130,9 +131,9 @@ echo "Starting Notifiarr..."
 sudo systemctl start notifiarr
 
 if sudo systemctl is-active –quiet notifiarr; then
-echo “Notifiarr service started and is currently running”
+    echo "Notifiarr service started and is currently running"
 else
-handle_error “Failed to start Notifiarr service”
+    handle_error "Failed to start Notifiarr service"
 fi
 
 exit 0

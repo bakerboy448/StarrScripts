@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define variables
-REPO_URL="git@github.com:Servarr/Wiki.git"  # URL for the repository
+REPO_URL="git@github.com:Servarr/Wiki.git" # URL for the repository
 TARGET_BRANCH="master"
 COMMIT_BRANCH="update-wiki-supported-indexers"
 REPO_DIR="/mnt/raid/_development/servarr.wiki"
@@ -22,7 +22,10 @@ configure_remote() {
 }
 
 # Navigate to the repository's directory
-cd $REPO_DIR || { log "Failed to change directory to $REPO_DIR. Exiting."; exit 1; }
+cd $REPO_DIR || {
+    log "Failed to change directory to $REPO_DIR. Exiting."
+    exit 1
+}
 
 # Configure git remote
 configure_remote

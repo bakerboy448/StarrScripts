@@ -13,8 +13,8 @@ handle_error() {
 old_version=$(omegabrr version)
 
 # Fetch the URL of the latest release for linux_x86_64
-dlurl=$(curl -s https://api.github.com/repos/autobrr/omegabrr/releases/latest | \
-        grep -E 'browser_download_url.*linux_x86_64' | cut -d\" -f4)
+dlurl=$(curl -s https://api.github.com/repos/autobrr/omegabrr/releases/latest |
+    grep -E 'browser_download_url.*linux_x86_64' | cut -d\" -f4)
 
 # Validate the download URL
 if [ -z "$dlurl" ]; then

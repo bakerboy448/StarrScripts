@@ -21,8 +21,8 @@ timestamp=$(date +"%Y-%m-%d %H:%M:%S")
 echo "[$timestamp] Duplicate search started for $JDUPES_SOURCE_DIR and $JDUPES_DESTINATION_DIR." >>"$JDUPES_OUTPUT_LOG"
 echo "command is"
 # Running jdupes with the loaded environment variables
-echo $JDUPES_COMMAND "$JDUPES_EXCLUDE_DIRS" "$JDUPES_INCLUDE_EXT" -L -r -Z -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR"
-$JDUPES_COMMAND $JDUPES_EXCLUDE_DIRS -X onlyext:$JDUPES_INCLUDE_EXT  -L -r -Z -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR" >>"$JDUPES_OUTPUT_LOG"
+echo "$JDUPES_COMMAND" "$JDUPES_EXCLUDE_DIRS" "$JDUPES_INCLUDE_EXT" -L -r -Z -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR"
+"$JDUPES_COMMAND" "$JDUPES_EXCLUDE_DIRS" -X onlyext:"$JDUPES_INCLUDE_EXT" -L -r -Z -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR" >>"$JDUPES_OUTPUT_LOG"
 
 # Logging the completion of the operation
 timestamp=$(date +"%Y-%m-%d %H:%M:%S")

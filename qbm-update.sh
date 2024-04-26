@@ -16,7 +16,7 @@ CURRENT_UID=$(id -u)
 # Check if QBM is installed and if the current user owns it
 check_qbm_installation() {
     if [ -d "$QBM_PATH" ]; then
-        local qbm_repo_owner=$(stat -c '%u' "$QBM_PATH")
+        qbm_repo_owner=$(stat -c '%u' "$QBM_PATH")
         if [ "$qbm_repo_owner" != "$CURRENT_UID" ]; then
             echo "You do not own the QbitManage repo. Please run this script as the user that owns the repo [$qbm_repo_owner]."
             exit 1
@@ -33,7 +33,7 @@ update_qbm() {
     echo "Current Branch: $current_branch. Checking for updates..."
     git -C "$QBM_PATH" fetch
     if [ "$(git -C "$QBM_PATH" rev-parse HEAD)" = "$(git -C "$QBM_PATH" rev-parse @'{u}')" ] && [ "$force_update" != true ]; then
-        local current_version=$(cat "$QBM_VERSION_FILE")
+        current_version=$(cat "$QBM_VERSION_FILE")
         echo "=== Already up to date $current_version on $current_branch ==="
         exit 0
     fi
@@ -43,7 +43,7 @@ update_qbm() {
 
 # Update virtual environment if requirements have changed
 update_venv() {
-    local new_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
+    new_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
     if [ "$current_requirements" != "$new_requirements" ] || [ "$force_update" = true ]; then
         echo "=== Requirements changed, updating venv ==="
         "$QBM_VENV_PATH/bin/python" "$QBM_VENV_PATH/bin/pip" install -r "$QBM_REQUIREMENTS_FILE"
@@ -54,7 +54,7 @@ update_venv() {
 restart_service() {
     echo "=== Restarting QBM Service ==="
     sudo systemctl restart "$QBM_SERVICE_NAME"
-    local new_version=$(cat "$QBM_VERSION_FILE")
+    new_version=$(cat "$QBM_VERSION_FILE")
     echo "=== Updated to $new_version on $current_branch"
 }
 
