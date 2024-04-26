@@ -1,14 +1,11 @@
 #!/bin/bash
 
 # Load environment variables from .env file
-set -a # automatically export all variables
 # Load environment variables from .env file if it exists
 if [ -f ".env" ]; then
     # shellcheck source=.env
     source ".env"
 fi
-# Use environment variables with descriptive default values
-set +a
 
 JDUPES_OUTPUT_LOG=${JDUPES_OUTPUT_LOG:-/var/log/jdupes.log}
 JDUPES_SOURCE_DIR=${JDUPES_SOURCE_DIR:-/mnt/data/media/}
