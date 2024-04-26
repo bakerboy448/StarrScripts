@@ -56,8 +56,18 @@ validate_process() {
     grep -qF "$unique_id" "$log_file" && { echo "Download ID $unique_id already processed. Exiting."; exit 0; }
 
     [ -z "$eventType" ] && { echo "No event type specified. Exiting."; exit 1; }
-    [ "$eventType" == "test" ] && { echo "Test event detected. Exiting."; exit 0; }
-    [ -z "$downloadID" ] || [ -z "$filePath" ] && { echo "Essential parameters missing. Exiting."; exit 1; }
+    [ "$eventType" == "Test" ] && { echo "Test event detected. Exiting."; exit 0; }
+    [ -z "$filePath" ] && [ -z "$downloadID" ] && { echo "Essential parameters missing. Exiting."; exit 1; } 
+
+    if [ -z "$downloadID" ] || [ -z "$filePath" ]; then
+        echo "Download ID is missing. Checking if file path works for data/path based cross-seeding."
+        if [ -z "$filePath" ]; then
+            echo "File path is missing. Exiting."
+            exit 1
+            fi
+    fi
+
+    [ -z "$filePath" ] && [ -z "$downloadID" ] && { echo "Essential parameters missing. Exiting."; exit 1; } 
 }
 
 # Main logic for handling operations
@@ -68,7 +78,7 @@ handle_operations() {
     case "$clientID" in
         "$torrentclientname")
             echo "Processing torrent client operations..."
-            xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID")
+            [ -n "$downloadID" ] && { xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID"); }
             [ "$xseed_resp" != "204" ] && sleep 15 && xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
             ;;
         "$usenetclientname")
