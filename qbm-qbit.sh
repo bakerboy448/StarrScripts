@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if lockfile command exists
+if ! command -v lockfile &>/dev/null; then
+    echo "Error: lockfile command not found. Please install the procmail package." >&2
+    exit 1
+fi
+
 # Load environment variables from .env file if it exists
 if [ -f ".env" ]; then
     source ".env"
