@@ -33,4 +33,4 @@ trap remove_lock EXIT
 sleep 600
 
 # Execute qbit_manage with configurable options
-"$VENV_PATH"/bin/python "$PATH_QBM"/qbit_manage.py $QBIT_OPTIONS --config-file "$CONFIG_PATH"
+"$VENV_PATH"/bin/python "$PATH_QBM"/qbit_manage.py "$QBIT_OPTIONS" --config-file "$CONFIG_PATH"

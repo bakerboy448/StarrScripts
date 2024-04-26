@@ -1,18 +1,28 @@
 #!/bin/bash
 
-# Load environment variables
-source ./.env
+# Load environment variables from .env file if it exists
+if [ -f ".env" ]; then
+    # shellcheck source=.env
+    source ".env"
+fi
+
+# Use environment variables with descriptive default values
+TORRENT_CLIENT_NAME=${TORRENT_CLIENT_NAME:-Qbit}
+USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
+XSEED_HOST=${XSEED_HOST:-crossseed}
+XSEED_PORT=${XSEED_PORT:-8080}
+LOG_FILE=${LOG_FILE:-/var/log/xseed.log}
 
 # Function to send a request to Cross Seed API
 cross_seed_request() {
     local endpoint="$1"
     local data="$2"
-    local headers=(-X POST "http://$xseed_host:$xseed_port/api/$endpoint" --data-urlencode "$data")
+    local headers=(-X POST "http://$XSEED_HOST:$XSEED_PORT/api/$endpoint" --data-urlencode "$data")
     if [ -n "$xseed_apikey" ]; then
         headers+=(-H "X-Api-Key: $xseed_apikey")
     fi
     response=$(curl --silent --output /dev/null --write-out "%{http_code}" "${headers[@]}")
-    echo $response
+    echo "$response"
 }
 
 # Detect application and set environment
@@ -44,30 +54,48 @@ detect_application() {
         downloadID="$readarr_download_id"
         eventType="$readarr_eventtype"
     fi
-    [ "$app" == "unknown" ] && { echo "Unknown application type detected. Exiting."; exit 1; }
+    [ "$app" == "unknown" ] && {
+        echo "Unknown application type detected. Exiting."
+        exit 1
+    }
 }
 
 # Validate the process
 validate_process() {
-    [ ! -f "$log_file" ] && touch "$log_file"
+    [ ! -f "$LOG_FILE" ] && touch "$LOG_FILE"
     unique_id="${downloadID}-${clientID}"
 
     [ -z "$unique_id" ] && return
-    grep -qF "$unique_id" "$log_file" && { echo "Download ID $unique_id already processed. Exiting."; exit 0; }
+    grep -qF "$unique_id" "$LOG_FILE" && {
+        echo "Download ID $unique_id already processed. Exiting."
+        exit 0
+    }
 
-    [ -z "$eventType" ] && { echo "No event type specified. Exiting."; exit 1; }
-    [ "$eventType" == "Test" ] && { echo "Test event detected. Exiting."; exit 0; }
-    [ -z "$filePath" ] && [ -z "$downloadID" ] && { echo "Essential parameters missing. Exiting."; exit 1; } 
+    [ -z "$eventType" ] && {
+        echo "No event type specified. Exiting."
+        exit 1
+    }
+    [ "$eventType" == "Test" ] && {
+        echo "Test event detected. Exiting."
+        exit 0
+    }
+    [ -z "$filePath" ] && [ -z "$downloadID" ] && {
+        echo "Essential parameters missing. Exiting."
+        exit 1
+    }
 
     if [ -z "$downloadID" ] || [ -z "$filePath" ]; then
         echo "Download ID is missing. Checking if file path works for data/path based cross-seeding."
         if [ -z "$filePath" ]; then
             echo "File path is missing. Exiting."
             exit 1
-            fi
+        fi
     fi
 
-    [ -z "$filePath" ] && [ -z "$downloadID" ] && { echo "Essential parameters missing. Exiting."; exit 1; } 
+    [ -z "$filePath" ] && [ -z "$downloadID" ] && {
+        echo "Essential parameters missing. Exiting."
+        exit 1
+    }
 }
 
 # Main logic for handling operations
@@ -76,23 +104,32 @@ handle_operations() {
     validate_process
 
     case "$clientID" in
-        "$torrentclientname")
-            echo "Processing torrent client operations..."
-            [ -n "$downloadID" ] && { xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID"); }
-            [ "$xseed_resp" != "204" ] && sleep 15 && xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
-            ;;
-        "$usenetclientname")
-            [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]] && { echo "Skipping season pack search."; exit 0; }
-            echo "Processing Usenet client operations..."
-            xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
-            ;;
-        *)
-            echo "Unrecognized client $clientID. Exiting."
-            exit 1
-            ;;
+    "$TORRENT_CLIENT_NAME")
+        echo "Processing torrent client operations..."
+        [ -n "$downloadID" ] && { xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID"); }
+        [ "$xseed_resp" != "204" ] && sleep 15 && xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
+        ;;
+    "$USENET_CLIENT_NAME")
+        [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]] && {
+            echo "Skipping season pack search."
+            exit 0
+        }
+        echo "Processing Usenet client operations..."
+        xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
+        ;;
+    *)
+        echo "Unrecognized client $clientID. Exiting."
+        exit 1
+        ;;
     esac
     echo "Cross-seed API response: $xseed_resp"
-    [ "$xseed_resp" == "204" ] && { echo "$unique_id" >> "$log_file"; echo "Process completed successfully."; } || { echo "Process failed with API response: $xseed_resp"; exit 1; }
+    if [ "$xseed_resp" == "204" ]; then
+        echo "$unique_id" >>"$LOG_FILE"
+        echo "Process completed successfully."
+    else
+        echo "Process failed with API response: $xseed_resp"
+        exit 1
+    fi
 }
 
 handle_operations
