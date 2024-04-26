@@ -1,12 +1,19 @@
 #!/bin/bash
 
-# Constants
-VERBOSE=0 # Set this to 1 for trace-level logging, 0 for informational logging
-MAX_FREQ=2
-MAX_HOURLY=2
-MAX_DAILY=1
-MAX_WEEKLY=0
-MAX_MONTHLY=0
+# Load .env file
+set -o allexport
+if [ -f ".env" ]; then
+    # shellcheck source=.env
+    source ".env"
+fi
+set +o allexport0
+
+VERBOSE=${VERBOSE:-1}
+MAX_FREQ=${MAX_FREQ:-4}
+MAX_HOURLY=${MAX_HOURLY:-2}
+MAX_DAILY=${MAX_DAILY:-7}
+MAX_WEEKLY=${MAX_WEEKLY:-4}
+MAX_MONTHLY=${MAX_MONTHLY:-3}
 
 # Logging function based on verbosity level
 log() {
@@ -22,15 +29,14 @@ bytes_to_human_readable() {
     local bytes=$1
     local units=('B' 'KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
     local unit=0
-    
-    while (( bytes > 1024 )); do
-        (( bytes /= 1024 ))
-        (( unit++ ))
+
+    while ((bytes > 1024)); do
+        ((bytes /= 1024))
+        ((unit++))
     done
-    
+
     echo "${bytes} ${units[unit]}"
 }
-
 
 # Function to retrieve snapshot counts for a specific snapshot type
 get_snapshot_count() {

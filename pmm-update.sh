@@ -17,7 +17,7 @@ CURRENT_UID=$(id -u)
 # Check if PMM is installed and the current user owns it
 check_pmm_installation() {
     if [ -d "$PMM_PATH" ]; then
-        local pmm_repo_owner=$(stat -c '%u' "$PMM_PATH")
+        pmm_repo_owner=$(stat -c '%u' "$PMM_PATH")
         if [ "$pmm_repo_owner" != "$CURRENT_UID" ]; then
             echo "You do not own the Plex Meta Manager repo. Please run this script as the user that owns the repo [$pmm_repo_owner]."
             exit 1
@@ -34,7 +34,7 @@ update_pmm() {
     echo "Current Branch: $current_branch. Checking for updates..."
     git -C "$PMM_PATH" fetch
     if [ "$(git -C "$PMM_PATH" rev-parse HEAD)" = "$(git -C "$PMM_PATH" rev-parse @'{u}')" ] && [ "$force_update" != true ]; then
-        local current_version=$(cat "$PMM_VERSION_FILE")
+        current_version=$(cat "$PMM_VERSION_FILE")
         echo "=== Already up to date $current_version on $current_branch ==="
         exit 0
     fi
@@ -43,8 +43,8 @@ update_pmm() {
 
 # Update venv if necessary
 update_venv() {
-    local current_requirements=$(sha1sum "$PMM_REQUIREMENTS_FILE" | awk '{print $1}')
-    local new_requirements=$(sha1sum "$PMM_REQUIREMENTS_FILE" | awk '{print $1}')
+    current_requirements=$(sha1sum "$PMM_REQUIREMENTS_FILE" | awk '{print $1}')
+    new_requirements=$(sha1sum "$PMM_REQUIREMENTS_FILE" | awk '{print $1}')
     if [ "$current_requirements" != "$new_requirements" ] || [ "$force_update" = true ]; then
         echo "=== Requirements changed, updating venv ==="
         "$PMM_VENV_PATH/bin/python3" "$PMM_VENV_PATH/bin/pip" install -r "$PMM_REQUIREMENTS_FILE"
@@ -55,7 +55,7 @@ update_venv() {
 restart_service() {
     echo "=== Restarting PMM Service ==="
     sudo systemctl restart "$PMM_SERVICE_NAME"
-    local new_version=$(cat "$PMM_VERSION_FILE")
+    new_version=$(cat "$PMM_VERSION_FILE")
     echo "=== Updated to $new_version on $current_branch"
 }
 
