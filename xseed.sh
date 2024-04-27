@@ -12,14 +12,15 @@ USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/var/log/xseed.log}
+XSEED_APIKEY=${XSEED_APIKEY}
 
 # Function to send a request to Cross Seed API
 cross_seed_request() {
     local endpoint="$1"
     local data="$2"
     local headers=(-X POST "http://$XSEED_HOST:$XSEED_PORT/api/$endpoint" --data-urlencode "$data")
-    if [ -n "$xseed_apikey" ]; then
-        headers+=(-H "X-Api-Key: $xseed_apikey")
+    if [ -n "$XSEED_APIKEY" ]; then
+        headers+=(-H "X-Api-Key: $XSEED_APIKEY")
     fi
     response=$(curl --silent --output /dev/null --write-out "%{http_code}" "${headers[@]}")
     echo "$response"
