@@ -1,43 +1,88 @@
 # StarrScripts
 
-Misc Scripts for Starr and Related Apps
+A curated collection of scripts to optimize and manage various functions related to Starr applications and associated tools. These scripts are designed to enhance functionality, improve management, and automate routine tasks.
 
-## dupe.sh
+## Scripts Overview
 
-Run jdupes on the specified path and output the results to a file. Copy .env.sample to .env and fill in the required values under "# Jdupes" Header. Review the parameters in the script to ensure they match your use case.
+### Cross-Seed Category Filter for Qbittorrent
 
-## servarr/servarr_bot_merge.sh
+- **Script:** `xseed_qbit_cat_filter.sh`
+- **Description:** Filters cross-seed requests by category for execution by Qbittorrent.
+- **Creator:** [zakkarry](https://github.com/zakkarry)
+- **Usage:** Execute the script to filter categories as needed in Qbittorrent setups.
 
-Use to merge the latest changes from the Servarr Wiki Bot Branch for Prowlarr Indexers to Wiki Master.
+### Cross-Seed Trigger for Starr Apps
 
-## zfsburn.sh
+- **Script:** `xseed.sh`
+- **Description:** Triggers a cross-seed search post-import or post-upgrade in Starr applications.
+- **Setup:**
+  1. Copy `.env.sample` to `.env`.
+  2. Populate required values under "# Xseed" header.
 
-Use to cleanup (delete) zfs autosnaphots older than the specified number of days. Copy .env.sample to .env and fill in the required values. Copy .env.sample to .env and fill in the required values under "# ZFS Destory" Header
+### Cross-Seed Updater
 
-## xseed.sh
+- **Script:** `xseed-update.sh`
+- **Description:** Updates the [Cross-Seed](https://github.com/cross-seed/cross-seed) tool to its latest version.
 
-Use with Starr On Import / On Upgrade custom script trigger to [Cross-Seed](https://github.com/cross-seed/cross-seed) search after import. Copy .env.sample to .env and fill in the required values under "# Xseed" Header
+### Duplicate File Manager
 
-## xseed-update.sh
+- **Script:** `dupe.sh`
+- **Description:** Executes `jdupes` to find and manage duplicate files in the specified directory.
+- **Setup:**
+  1. Copy `.env.sample` to `.env`.
+  2. Populate required values under "# Jdupes" header.
+  3. Review and adjust script parameters to fit your use case.
+- **Output:** Results are saved to a file as specified in the script.
 
-Script to update [Cross-Seed](https://github.com/cross-seed/cross-seed) to the current version
+### Notifiarr Branch Builder
 
-## qbm-qbit.sh
+- **Script:** `notifiarr-branch-builder.sh`
+- **Description:** Reinstalls [Notifiarr](https://github.com/Notifiarr/notifiarr) and allows selection of the installation branch, from apt or built from source.
+- **Review:** Validate script parameters to ensure compatibility with your system.
 
-Use with Qbit on download complete to trigger [QbitManage](https://github.com/StuffAnThings/qbit_manage) to run with the specified parameters. Copy .env.sample to .env and fill in the required values under "# Qbittorrent Manage" Header.
+### Plex Image Cleanup Updater
 
-## qbm-update.sh
+- **Script:** `pic-update.sh`
+- **Description:** Updates [Plex-Image-Cleanup](https://github.com/meisnate12/Plex-Image-Cleanup) to the latest branch.
+- **Review:** Check that script parameters are suitable for your environment.
 
-Script to update [QbitManage](https://github.com/StuffAnThings/qbit_manage) to the currently checked out branch. Review the parameters in the script to ensure they match your setup.
+### Plex Meta Manager Updater
 
-## pmm-update.sh
+- **Script:** `pmm-update.sh`
+- **Description:** Updates [Plex Meta Manager](https://github.com/meisnate12/Plex-Meta-Manager) to the latest branch.
+- **Review:** Confirm script parameters align with your configuration.
 
-Script to update [Plex Meta Manager](https://github.com/meisnate12/Plex-Meta-Manager) to the currently checked out branch. Review the parameters in the script to ensure they match your setup.
+### Qbittorrent Management Trigger
 
-## pic-update.sh
+- **Script:** `qbm-qbit.sh`
+- **Description:** Executes [QbitManage](https://github.com/StuffAnThings/qbit_manage) upon download completion in Qbittorrent.
+- **Setup:**
+  1. Copy `.env.sample` to `.env`.
+  2. Populate required values under "# Qbittorrent Manage" header.
 
-Script to update [Plex-Image-Cleanup](https://github.com/meisnate12/Plex-Image-Cleanup) to the currently checked out branch. Review the parameters in the script to ensure they match your setup.
+### QbitManage Updater
 
-## notifiarr-branch-builder.sh
+- **Script:** `qbm-update.sh`
+- **Description:** Updates [QbitManage](https://github.com/StuffAnThings/qbit_manage) to the latest branch.
+- **Review:** Ensure script parameters match your setup before execution.
 
-Script to reinstall [Notifiarr](https://github.com/Notifiarr/notifiarr) from apt or build from source prompting for which branch to use. Review the parameters in the script to ensure they match your setup.
+### Servarr Bot Merger
+
+- **Script:** `servarr/servarr_bot_merge.sh`
+- **Description:** Merges the latest changes from the Servarr Wiki Bot Branch into the Prowlarr Indexers Wiki Master.
+
+### ZFS Snapshot Cleanup
+
+- **Script:** `zfsburn.sh`
+- **Description:** Deletes ZFS autosnapshots older than a specified number of days.
+- **Setup:**
+  1. Copy `.env.sample` to `.env`.
+  2. Fill in the required values under "# ZFS Destroy" header.
+
+## Contributions
+
+Contributions to improve or expand the scripts collection are welcome. Please refer to the [contribution guidelines](https://github.com/bakerboy448/StarrScripts/blob/main/CONTRIBUTING.md) for more information.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/bakerboy448/StarrScripts/blob/main/LICENSE) file for details.
