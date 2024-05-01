@@ -1,3 +1,10 @@
+import os
+import shutil
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 def merge_directories(src, dst):
     """
     Recursively merges directories from src to dst without overwriting existing files.
@@ -33,7 +40,7 @@ def atomic_moves(source_directories, target_directory):
         except Exception as e:
             logging.error(f"Error during moving process from {src}: {e}")
 
-# Example use case (commented out for safety):
+# Example use case (commented out for safety - remove "# " to uncomment):
 # source_dirs = ['/mnt/data/media/tv-slade', '/mnt/data/media/tv-tmp']
 # target_dir = '/mnt/data/media/tv'
 # atomic_moves(source_dirs, target_dir)
