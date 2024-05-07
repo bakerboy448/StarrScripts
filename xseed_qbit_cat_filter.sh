@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-# chmod +x the script
-# put the following execution command in your qbit with its absolute path.
-# /qB_post.sh "%F" "%L" "%N" "%T" "%I"
+# chmod +x this script (terminal command e.g. `chmod +x xseed_qbit_cat_filter.sh`)
+# put the following execution command in your qbit with its absolute path from qbit's
+# perspective (container path if docker).
+#
+# /path/to/xseed_qbit_cat_filter.sh "%F" "%L" "%N" "%T" "%I"
 
 TORRENT_PATH=$1
 TORRENT_CAT=$2
@@ -18,6 +20,15 @@ set -eu
 # do not use quotes in either variable
 XSEED_URL=http://cross-seed:2468/api/webhook
 XSEED_API_KEY=
+
+# Filter for categories you want cross seed to search for
+# Ex) Radarr-HD|Radarr-UHD|TV|TV-HQ
+FILTERED_CAT=CAT1|CAT2|CAT3
+
+# Filter for trackers you want cross seed to search for
+# Ex) tracker.announce.com|tracker.announce2.com
+FILTERED_TRACKER=tracker1.announce.com|tracker2.announce.com
+
 
 log() {
   echo -e "${0##*/}: $1"
@@ -48,12 +59,10 @@ fi
 log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_CAT]"
 
 
-## setup if logic for the categories you want, copy paste 53 through 55 and duplicate for more logic
-
-if [[ "$TORRENT_CAT" =~ ^(Radarr-HD|Radarr-UHD)$ ]]; then
+if [[ "$TORRENT_CAT" =~ ^($FILTERED_CAT)$ ]]; then
   xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
   [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH")
-elif [[ "$TORRENT_CAT" =~ ^(TV|TV-HQ)$ ]]; then
+elif [[ "$TORRENT_TRACKER" =~ ($FILTERED_TRACKER) ]]; then
   xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
   [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH")
 fi
