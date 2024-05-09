@@ -23,11 +23,11 @@ XSEED_API_KEY=
 
 # Filter for categories you want cross seed to search for
 # Ex) Radarr-HD|Radarr-UHD|TV|TV-HQ
-FILTERED_CAT=CAT1|CAT2|CAT3
+FILTERED_CAT="CAT1|CAT2|CAT3"
 
 # Filter for trackers you want cross seed to search for
 # Ex) tracker.announce.com|tracker.announce2.com
-FILTERED_TRACKER=tracker1.announce.com|tracker2.announce.com
+FILTERED_TRACKER="tracker1.announce.com|tracker2.announce.com"
 
 
 log() {
@@ -56,13 +56,12 @@ elif [[ -z "$TORRENT_CAT" ]]; then
   log_err "Category not specified for $TORRENT_PATH"
 fi
 
-log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_CAT]"
 
 
 if [[ "$TORRENT_CAT" =~ ^($FILTERED_CAT)$ ]]; then
   xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
-  [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH")
+  [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH") && log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_CAT]"
 elif [[ "$TORRENT_TRACKER" =~ ($FILTERED_TRACKER) ]]; then
   xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
-  [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH")
+  [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH") && log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_TRACKER]"
 fi
