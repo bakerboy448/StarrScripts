@@ -58,11 +58,11 @@ fi
 
 
 
-if [[ "$TORRENT_CAT" =~ ^($FILTERED_CAT)$ ]]; then
+if [[ -n "$FILTERED_CAT" ]] && [[ "$TORRENT_CAT" =~ ^($FILTERED_CAT)$ ]]; then
   log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_CAT]"
   xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
   [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH") 
-elif [[ "$TORRENT_TRACKER" =~ ($FILTERED_TRACKER) ]]; then
+elif [[ -n "$FILTERED_TRACKER" ]] && [[ "$TORRENT_TRACKER" =~ ($FILTERED_TRACKER) ]]; then
   log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_TRACKER]"
   xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
   [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH")
