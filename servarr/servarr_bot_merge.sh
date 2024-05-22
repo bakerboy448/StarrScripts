@@ -32,12 +32,11 @@ configure_remote
 
 # Fetch the latest updates from the repository
 log "fetching and purning origin"
-git fetch --prune origin
+git fetch --all --prune origin
 
 log "checking out and pulling $COMMIT_BRANCH. Also pulling origin/$TARGET_BRANCH"
-git checkout $TARGET_BRANCH
-git pull origin $TARGET_BRANCH
-git checkout $COMMIT_BRANCH
+git checkout -B $TARGET_BRANCH
+git checkout -B $COMMIT_BRANCH
 git pull origin $COMMIT_BRANCH
 
 git_branch=$(git branch --show-current)
@@ -60,6 +59,7 @@ if git rebase origin/$TARGET_BRANCH; then
         log "Rebase, merge, and push to $TARGET_BRANCH completed successfully."
         git push origin --delete $COMMIT_BRANCH
         log "Deleted Remote Branch $COMMIT_BRANCH"
+        git branch -d $COMMIT_BRANCH
     else
         log "Updates are on the target branch, no pull request needed."
     fi
