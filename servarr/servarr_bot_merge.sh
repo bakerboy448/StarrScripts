@@ -32,12 +32,11 @@ configure_remote
 
 # Fetch the latest updates from the repository
 log "fetching and purning origin"
-git fetch --all --prune origin
+git fetch --all --prune
 
 log "checking out and pulling $COMMIT_BRANCH. Also pulling origin/$TARGET_BRANCH"
 git checkout -B $TARGET_BRANCH
 git checkout -B $COMMIT_BRANCH
-git pull origin $COMMIT_BRANCH
 
 git_branch=$(git branch --show-current)
 log "git branch is $git_branch"
