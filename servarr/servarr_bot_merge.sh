@@ -51,14 +51,27 @@ if git rebase origin/$TARGET_BRANCH; then
     # Merge the commit branch into the target branch to bring the rebased commit into target
     # This is assuming the rebase has made commit branch ahead of target and can be fast-forwarded
     log "Merging into $COMMIT_BRANCH with --ff-only"
-    git merge --ff-only $COMMIT_BRANCH
+    LOCAL_HASH=$(git rev-parse "$COMMIT_BRANCH")
+    REMOTE_HASH=$(git rev-parse "origin/$COMMIT_BRANCH")
 
+    if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
+      git merge --ff-only $COMMIT_BRANCH
+    else
+      echo "Local branch $COMMIT_BRANCH is the same as origin/$COMMIT_BRANCH. No action needed."
+    fi
     # Now push the updated TARGET_BRANCH to the remote
-    if git push origin $TARGET_BRANCH; then
+    if [ "$LOCAL_HASH" != "$REMOTE_HASH" ] && git push origin $TARGET_BRANCH; then
         log "Rebase, merge, and push to $TARGET_BRANCH completed successfully."
-        git push origin --delete $COMMIT_BRANCH
-        log "Deleted Remote Branch $COMMIT_BRANCH"
+        # Check if the branch exists on the remote
+        if git ls-remote --heads origin | grep -q "refs/heads/$COMMIT_BRANCH"; then
+          echo "Branch $COMMIT_BRANCH exists on origin. Deleting..."
+          git push origin --delete "$COMMIT_BRANCH"
+          echo "Branch $COMMIT_BRANCH deleted from origin."
+        else
+          echo "Branch $COMMIT_BRANCH does not exist on origin."
+        fi
         git branch -d $COMMIT_BRANCH
+        log "Deleted Local Branch $COMMIT_BRANCH"
     else
         log "Updates are on the target branch, no pull request needed."
     fi
