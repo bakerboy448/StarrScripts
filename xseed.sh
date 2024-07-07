@@ -11,7 +11,7 @@ TORRENT_CLIENT_NAME=${TORRENT_CLIENT_NAME:-Qbit}
 USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
-LOG_FILE=${LOG_FILE:-/.config/xseed.log}
+LOG_FILE=${LOG_FILE:-/config/xseed.log}
 XSEED_APIKEY=${XSEED_APIKEY}
 
 # Function to send a request to Cross Seed API
