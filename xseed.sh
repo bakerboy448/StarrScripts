@@ -66,25 +66,6 @@ detect_application() {
         fi
         # shellcheck disable=SC2154 # These are set by Starr on call
         eventType="$sonarr_eventtype"
-    elif [ -n "$lidarr_eventtype" ]; then
-        app="lidarr"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        clientID="$lidarr_download_client"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        filePath="$lidarr_artist_path"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        downloadID="$lidarr_download_id"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        eventType="$lidarr_eventtype"
-    elif [ -n "$readarr_eventtype" ]; then
-        app="readarr"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        clientID="$readarr_download_client"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        filePath="$readarr_author_path"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        downloadID="$readarr_download_id"
-        eventType="$readarr_eventtype"
     fi
     [ "$app" == "unknown" ] && {
         echo "Unknown application type detected. Exiting."
