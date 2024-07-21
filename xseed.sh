@@ -1,4 +1,10 @@
 #!/bin/bash
+### UPDATED FOR SEASON PACK FROM USENET SUPPORT IN 
+### CROSS SEED v6 ONLY!! v5 IS NOT SUPPORTED FOR USENET
+### SEASON PACKS AND WILL ALWAYS FAIL TO FIND MATCHES
+
+### TO ENABLE THIS FEATURE YOU _MUST_ SWITCH TO THE 
+### ON IMPORT COMPLETE EVENT TYPE IN YOUR SONARR SETTINGS
 
 # Load environment variables from .env file if it exists
 if [ -f ".env" ]; then
@@ -42,13 +48,22 @@ detect_application() {
     elif [ -n "$sonarr_eventtype" ]; then
         app="sonarr"
         # shellcheck disable=SC2154 # These are set by Starr on call
+        sonarrReleaseType="$sonarr_release_releasetype"
+        # shellcheck disable=SC2154 # These are set by Starr on call
         clientID="$sonarr_download_client"
         # shellcheck disable=SC2154 # These are set by Starr on call
         downloadID="$sonarr_download_id"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        filePath="$sonarr_episodefile_path"
-        # shellcheck disable=SC2154 # These are set by Starr on call
-        folderPath="$sonarr_episodefile_sourcefolder"
+        if [ -n "$sonarrReleaseType" ] && [ "$sonarrReleaseType" == "SeasonPack" ]; then
+            # shellcheck disable=SC2154 # These are set by Starr on call
+            folderPath="$sonarr_destinationpath"
+        else
+            [ -z "$sonarr_release_releasetype" ] && {
+                # shellcheck disable=SC2154 # These are set by Starr on call
+                folderPath="$sonarr_episodefile_sourcefolder"
+            }
+            # shellcheck disable=SC2154 # These are set by Starr on call
+            filePath="$sonarr_episodefile_paths"
+        fi
         # shellcheck disable=SC2154 # These are set by Starr on call
         eventType="$sonarr_eventtype"
     elif [ -n "$lidarr_eventtype" ]; then
@@ -96,43 +111,47 @@ validate_process() {
         echo "Test event detected. Exiting."
         exit 0
     }
-    [ -z "$filePath" ] && [ -z "$downloadID" ] && {
+    [ -z "$filePath"  ] && [ -z "$folderPath" ] && [ -z "$downloadID" ] && {
         echo "Essential parameters missing. Exiting."
         exit 1
     }
 
-    if [ -z "$downloadID" ] || [ -z "$filePath" ]; then
+    if [ -z "$downloadID" ] && [[ -z "$filePath" || -z "$folderPath" ]]; then
         echo "Download ID is missing. Checking if file path works for data/path based cross-seeding."
-        if [ -z "$filePath" ]; then
-            echo "File path is missing. Exiting."
+        if [[ -z "$filePath" && -z "$folderPath" ]]; then
+            echo "File and Folder paths are missing. Exiting."
             exit 1
         fi
     fi
-
-    [ -z "$filePath" ] && [ -z "$downloadID" ] && {
-        echo "Essential parameters missing. Exiting."
-        exit 1
-    }
 }
-
+send_data_search() {
+    if [ -n "$sonarrReleaseType" ] && [ "$sonarrReleaseType" == "SeasonPack" ]; then
+        xseed_resp=$(cross_seed_request "webhook" "path=$folderPath")
+    else
+        xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
+    fi
+}
 # Main logic for handling operations
 handle_operations() {
     detect_application
     validate_process
-
     case "$clientID" in
     "$TORRENT_CLIENT_NAME")
         echo "Processing torrent client operations..."
         [ -n "$downloadID" ] && { xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID"); }
-        [ "$xseed_resp" != "204" ] && sleep 15 && xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
+        if [ "$xseed_resp" != "204" ]; then
+            sleep 15
+            send_data_search
+        fi
         ;;
     "$USENET_CLIENT_NAME")
-        [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]] && {
-            echo "Skipping season pack search."
+        if [ -z "$sonarrReleaseType" ] && [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]]; then {
+            echo "Skipping season pack search. Please switch to On Import Complete for Usenet Season Pack Support!"
             exit 0
         }
+        fi
         echo "Processing Usenet client operations..."
-        xseed_resp=$(cross_seed_request "webhook" "path=$filePath")
+        send_data_search
         ;;
     *)
         echo "Unrecognized client $clientID. Exiting."
