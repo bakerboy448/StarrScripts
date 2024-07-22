@@ -128,7 +128,7 @@ validate_process() {
         exit 1
     fi
 
-    if [ -z "$downloadID" ] && [[ -z "$filePath" || -z "$folderPath" ]]; then
+    if [ -z "$downloadID" ]; then
         log_message "ERROR" "Download ID is missing. Checking if file path works for data/path based cross-seeding."
         if [[ -z "$filePath" && -z "$folderPath" ]]; then
             log_message "ERROR" "File and Folder paths are missing. Exiting."
