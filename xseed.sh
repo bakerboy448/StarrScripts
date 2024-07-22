@@ -7,10 +7,14 @@
 ### ON IMPORT COMPLETE EVENT TYPE IN YOUR SONARR SETTINGS
 
 # Load environment variables from .env file if it exists
-if [ -f ".env" ]; then
+# in the same directory as this bash script
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_PATH="$SCRIPT_DIR/.env"
+if [ -f "$ENV_PATH" ]; then
     # shellcheck source=.env
-    echo "Loading environment variables from .env file"
-    source ".env"
+    echo "Loading environment variables from $ENV_PATH file"
+    source "$ENV_PATH"
     if [ $? -eq 0 ]; then
         echo "Environment variables loaded successfully"
     else
@@ -18,7 +22,7 @@ if [ -f ".env" ]; then
         exit 1
     fi
 else
-    echo ".env file not found"
+    echo ".env file not found in script directory ($ENV_PATH)"
 fi
 
 # Use environment variables with descriptive default values
@@ -86,7 +90,7 @@ detect_application() {
                 folderPath="$sonarr_episodefile_sourcefolder"
             }
             # shellcheck disable=SC2154 # These are set by Starr on call
-            filePath="$sonarr_episodefile_paths"
+            filePath="$sonarr_episodefile_path"
         fi
         # shellcheck disable=SC2154 # These are set by Starr on call
         eventType="$sonarr_eventtype"
