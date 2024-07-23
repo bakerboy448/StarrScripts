@@ -14,8 +14,8 @@ ENV_PATH="$SCRIPT_DIR/.env"
 if [ -f "$ENV_PATH" ]; then
     # shellcheck source=.env
     echo "Loading environment variables from $ENV_PATH file"
-    source "$ENV_PATH"
-    if [ $? -eq 0 ]; then
+    # shellcheck disable=SC1090 # shellcheck sucks
+    if source "$ENV_PATH"; then
         echo "Environment variables loaded successfully"
     else
         echo "Error loading environment variables" >&2
@@ -31,6 +31,7 @@ USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
+# shellcheck disable=SC2269
 XSEED_APIKEY=${XSEED_APIKEY}
 
 # Function to log messages

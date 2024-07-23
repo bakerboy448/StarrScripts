@@ -7,8 +7,22 @@ if ! command -v lockfile &>/dev/null; then
 fi
 
 # Load environment variables from .env file if it exists
-if [ -f ".env" ]; then
-    source ".env"
+# in the same directory as this bash script
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_PATH="$SCRIPT_DIR/.env"
+if [ -f "$ENV_PATH" ]; then
+    # shellcheck source=.env
+    echo "Loading environment variables from $ENV_PATH file"
+    # shellcheck disable=SC1090 # shellcheck sucks
+    if source "$ENV_PATH"; then
+        echo "Environment variables loaded successfully"
+    else
+        echo "Error loading environment variables" >&2
+        exit 1
+    fi
+else
+    echo ".env file not found in script directory ($ENV_PATH)"
 fi
 
 # Use environment variables with descriptive default values

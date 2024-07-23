@@ -3,7 +3,10 @@ import shutil
 import logging
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 def merge_directories(src, dst):
     """
@@ -12,7 +15,7 @@ def merge_directories(src, dst):
     for item in os.listdir(src):
         src_path = os.path.join(src, item)
         dst_path = os.path.join(dst, item)
-        
+
         if os.path.isdir(src_path):
             # If it's a directory, recurse into it
             if not os.path.exists(dst_path):
@@ -28,6 +31,7 @@ def merge_directories(src, dst):
             else:
                 logging.info(f"File skipped (already exists): {dst_path}")
 
+
 def atomic_moves(source_directories, target_directory):
     """
     Handles atomic moving from multiple source directories to a single target directory.
@@ -39,6 +43,7 @@ def atomic_moves(source_directories, target_directory):
             merge_directories(src, target_directory)
         except Exception as e:
             logging.error(f"Error during moving process from {src}: {e}")
+
 
 # Example use case (commented out for safety - remove "# " to uncomment):
 # source_dirs = ['/mnt/data/media/tv-slade', '/mnt/data/media/tv-tmp']

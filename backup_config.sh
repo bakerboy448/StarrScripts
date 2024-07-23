@@ -20,23 +20,18 @@ EXCLUDE_PATTERNS=(
   '--exclude=plexmediaserver/*'
 )
 
-# Create the archive in /tmp
-tar -czvf "$TEMP_BACKUP_DIR/$ARCHIVE_NAME" "${EXCLUDE_PATTERNS[@]}" -C "$SOURCE_DIR" . > "$LOG_FILE" 2>&1
+# Create the archive in /tmp and check if the archive was created successfully
+if tar -czvf "$TEMP_BACKUP_DIR/$ARCHIVE_NAME" "${EXCLUDE_PATTERNS[@]}" -C "$SOURCE_DIR" . >"$LOG_FILE" 2>&1; then
+  echo "Archive created successfully: $TEMP_BACKUP_DIR/$ARCHIVE_NAME" >>"$LOG_FILE"
 
-# Check if the archive was created successfully
-if [[ $? -eq 0 ]]; then
-  echo "Archive created successfully: $TEMP_BACKUP_DIR/$ARCHIVE_NAME" >> "$LOG_FILE"
-  
   # Sync the archive to the remote backup directory
-  rsync -av "$TEMP_BACKUP_DIR/$ARCHIVE_NAME" "$REMOTE_BACKUP_DIR" >> "$LOG_FILE" 2>&1
-  
-  if [[ $? -eq 0 ]]; then
-    echo "Backup synced successfully: $REMOTE_BACKUP_DIR/$ARCHIVE_NAME" >> "$LOG_FILE"
+  if rsync -av "$TEMP_BACKUP_DIR/$ARCHIVE_NAME" "$REMOTE_BACKUP_DIR" >>"$LOG_FILE" 2>&1; then
+    echo "Backup synced successfully: $REMOTE_BACKUP_DIR/$ARCHIVE_NAME" >>"$LOG_FILE"
     # Optionally, remove the local archive after successful sync
     rm "$TEMP_BACKUP_DIR/$ARCHIVE_NAME"
   else
-    echo "Failed to sync the backup to the remote server" >> "$LOG_FILE"
+    echo "Failed to sync the backup to the remote server" >>"$LOG_FILE"
   fi
 else
-  echo "Failed to create the archive" >> "$LOG_FILE"
+  echo "Failed to create the archive" >>"$LOG_FILE"
 fi

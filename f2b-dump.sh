@@ -5,6 +5,7 @@ temp_file=$(mktemp)
 
 # Function to add content to the temporary file
 add_content() {
+    # shellcheck disable=SC2129
     echo -e "\n$1\n" >>"$temp_file"
     cat "$2" >>"$temp_file" 2>/dev/null
     echo -e "\n" >>"$temp_file"
@@ -34,7 +35,7 @@ done
 
 # Upload to termbin
 echo "Uploading to Termbin..." >>"$temp_file"
-cat "$temp_file" | nc termbin.com 9999
+nc termbin.com 9999 <"$temp_file"
 
 # Cleanup
 rm "$temp_file"

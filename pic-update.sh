@@ -16,7 +16,8 @@ CURRENT_UID=$(id -u)
 # Check if Plex-Image-Cleanup is installed and the current user owns it
 check_pic_installation() {
     if [ -d "$PIC_PATH" ]; then
-        local pic_repo_owner=$(stat -c '%u' "$PIC_PATH")
+        local pic_repo_owner
+        pic_repo_owner=$(stat -c '%u' "$PIC_PATH")
         if [ "$pic_repo_owner" != "$CURRENT_UID" ]; then
             echo "You do not own the Plex-Image-Cleanup repo. Please run this script as the user that owns the repo [$pic_repo_owner]."
             exit 1

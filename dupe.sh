@@ -1,12 +1,24 @@
 #!/bin/bash
 
-# Load environment variables from .env file
 # Load environment variables from .env file if it exists
-if [ -f ".env" ]; then
+# in the same directory as this bash script
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_PATH="$SCRIPT_DIR/.env"
+if [ -f "$ENV_PATH" ]; then
     # shellcheck source=.env
-    source ".env"
-    echo "using .env file"
+    echo "Loading environment variables from $ENV_PATH file"
+    # shellcheck disable=SC1090 # shellcheck sucks
+    if source "$ENV_PATH"; then
+        echo "Environment variables loaded successfully"
+    else
+        echo "Error loading environment variables" >&2
+        exit 1
+    fi
+else
+    echo ".env file not found in script directory ($ENV_PATH)"
 fi
+
 # Variables
 JDUPES_OUTPUT_LOG=${JDUPES_OUTPUT_LOG:-"/mnt/data/jdupes.log"}
 JDUPES_SOURCE_DIR=${JDUPES_SOURCE_DIR:-"/mnt/data/media/"}

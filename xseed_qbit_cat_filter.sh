@@ -29,7 +29,6 @@ FILTERED_CAT="CAT1|CAT2|CAT3"
 # Ex) tracker.announce.com|tracker.announce2.com
 FILTERED_TRACKER="tracker1.announce.com|tracker2.announce.com"
 
-
 log() {
   echo -e "${0##*/}: $1"
 }
@@ -39,13 +38,13 @@ log_err() {
 }
 
 cross_seed_request() {
-    local data="$1"
-    local headers=(-X POST "$XSEED_URL" --data-urlencode "$data")
-    if [ -n "$XSEED_API_KEY" ]; then
-        headers+=(-H "X-Api-Key: $XSEED_API_KEY")
-    fi
-    response=$(curl --silent --output /dev/null --write-out "%{http_code}" "${headers[@]}")
-    echo "$response"
+  local data="$1"
+  local headers=(-X POST "$XSEED_URL" --data-urlencode "$data")
+  if [ -n "$XSEED_API_KEY" ]; then
+    headers+=(-H "X-Api-Key: $XSEED_API_KEY")
+  fi
+  response=$(curl --silent --output /dev/null --write-out "%{http_code}" "${headers[@]}")
+  echo "$response"
 }
 
 if [[ -z "$TORRENT_PATH" ]]; then
@@ -56,14 +55,12 @@ elif [[ -z "$TORRENT_CAT" ]]; then
   log_err "Category not specified for $TORRENT_PATH"
 fi
 
-
-
 if [[ -n "$FILTERED_CAT" ]] && [[ "$TORRENT_CAT" =~ ^($FILTERED_CAT)$ ]]; then
   log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_CAT]"
-  xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
-  [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH") 
+  xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH")
+  [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH")
 elif [[ -n "$FILTERED_TRACKER" ]] && [[ "$TORRENT_TRACKER" =~ ($FILTERED_TRACKER) ]]; then
   log "[\033[1m$TORRENT_NAME\033[0m] [$TORRENT_TRACKER]"
-  xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH");
+  xseed_resp=$(cross_seed_request "infoHash=$TORRENT_INFOHASH")
   [ "$xseed_resp" != "204" ] && sleep 30 && xseed_resp=$(cross_seed_request "path=$TORRENT_PATH")
 fi
