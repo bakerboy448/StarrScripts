@@ -85,12 +85,15 @@ detect_application() {
             # shellcheck disable=SC2154 # These are set by Starr on call
             folderPath="$sonarr_destinationpath"
         else
-            [ -z "$sonarr_release_releasetype" ] && {
+            if [ -z "$sonarr_release_releasetype" ] then; {
                 # shellcheck disable=SC2154 # These are set by Starr on call
                 folderPath="$sonarr_episodefile_sourcefolder"
+                filePath="$sonarr_episodefile_path"
             }
-            # shellcheck disable=SC2154 # These are set by Starr on call
-            filePath="$sonarr_episodefile_path"
+            else 
+                # shellcheck disable=SC2154 # These are set by Starr on call
+                filePath="$sonarr_episodefile_paths"
+            fi
         fi
         # shellcheck disable=SC2154 # These are set by Starr on call
         eventType="$sonarr_eventtype"
