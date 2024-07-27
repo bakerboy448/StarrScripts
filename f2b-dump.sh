@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Temporary file to hold the Fail2Ban configuration details
 temp_file=$(mktemp)

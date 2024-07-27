@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Define service name as a variable
 service_name="omegabrr@bakerboy448"

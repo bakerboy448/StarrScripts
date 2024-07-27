@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check if lockfile command exists
 if ! command -v lockfile &>/dev/null; then
