@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Load environment variables from .env file if it exists
 # in the same directory as this bash script

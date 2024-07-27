@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Define variables
 REPO_URL="git@github.com:Servarr/Wiki.git" # URL for the repository

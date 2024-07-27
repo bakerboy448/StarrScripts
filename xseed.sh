@@ -1,9 +1,9 @@
-#!/bin/bash
-### UPDATED FOR SEASON PACK FROM USENET SUPPORT IN 
+#!/usr/bin/env bash
+### UPDATED FOR SEASON PACK FROM USENET SUPPORT IN
 ### CROSS SEED v6 ONLY!! v5 IS NOT SUPPORTED FOR USENET
 ### SEASON PACKS AND WILL ALWAYS FAIL TO FIND MATCHES
 
-### TO ENABLE THIS FEATURE YOU _MUST_ SWITCH TO THE 
+### TO ENABLE THIS FEATURE YOU _MUST_ SWITCH TO THE
 ### ON IMPORT COMPLETE EVENT TYPE IN YOUR SONARR SETTINGS
 
 # Load environment variables from .env file if it exists
@@ -92,7 +92,7 @@ detect_application() {
                 # shellcheck disable=SC2154 # These are set by Starr on call
                 filePath="$sonarr_episodefile_path"
             }
-            else 
+            else
                 # shellcheck disable=SC2154 # These are set by Starr on call
                 filePath="$sonarr_episodefile_paths"
             fi

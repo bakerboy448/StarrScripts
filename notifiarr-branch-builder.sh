@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Extend the PATH to include the go binary directory
 export PATH=$PATH:/usr/local/go/bin
