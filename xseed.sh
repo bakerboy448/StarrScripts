@@ -8,15 +8,17 @@
 
 # Load environment variables from .env file if it exists
 # in the same directory as this bash script
-
+VERSION='2.1.0'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_PATH="$SCRIPT_DIR/.env"
+EVAR=false
 if [ -f "$ENV_PATH" ]; then
     # shellcheck source=.env
     echo "Loading environment variables from $ENV_PATH file"
     # shellcheck disable=SC1090 # shellcheck sucks
     if source "$ENV_PATH"; then
         echo "Environment variables loaded successfully"
+        EVAR=true
     else
         echo "Error loading environment variables" >&2
         exit 1
@@ -41,8 +43,9 @@ log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [$log_type] $message" | tee -a "$LOG_FILE"
 }
 
-log_message "INFO" "Script started"
-log_message "INFO" "Using environment variables:"
+log_message "INFO" "xseed.sh script started $VERSION"
+log_message "DEBUG" "Using '.env' file for config?: $EVAR"
+log_message "INFO" "Gathered Starr environment variables:"
 log_message "INFO" "TORRENT_CLIENT_NAME=$TORRENT_CLIENT_NAME"
 log_message "INFO" "USENET_CLIENT_NAME=$USENET_CLIENT_NAME"
 log_message "INFO" "XSEED_HOST=$XSEED_HOST"
@@ -58,6 +61,11 @@ cross_seed_request() {
         headers+=(-H "X-Api-Key: $XSEED_APIKEY")
     fi
     response=$(curl --silent --output /dev/null --write-out "%{http_code}" "${headers[@]}")
+    
+    if [ "$response" == "000" ]; then
+        log_message "ERROR" "Failed to connect to $XSEED_HOST:$XSEED_PORT. Timeout or connection refused."
+    fi
+    
     echo "$response"
 }
 
