@@ -11,20 +11,28 @@
 VERSION='2.1.0'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_PATH="$SCRIPT_DIR/.env"
+
+# Function to log messages
+log_message() {
+    local log_type="$1"
+    local message="$2"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [$log_type] $message" | tee -a "$LOG_FILE"
+}
+log_message "INFO" "xseed.sh script started $VERSION"
 EVAR=false
 if [ -f "$ENV_PATH" ]; then
     # shellcheck source=.env
-    echo "Loading environment variables from $ENV_PATH file"
+    log_message "INFO" "Loading environment variables from $ENV_PATH file"
     # shellcheck disable=SC1090 # shellcheck sucks
     if source "$ENV_PATH"; then
-        echo "Environment variables loaded successfully"
+        log_message "INFO" "Environment variables loaded successfully"
         EVAR=true
     else
-        echo "Error loading environment variables" >&2
-        exit 1
+        log_message "ERROR" "Error loading environment variables" >&2
+        exit 2
     fi
 else
-    echo ".env file not found in script directory ($ENV_PATH)"
+    log_message "DEBUG" ".env file not found in script directory ($ENV_PATH)"
 fi
 
 # Use environment variables with descriptive default values
@@ -33,19 +41,9 @@ USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
-# shellcheck disable=SC2269
-XSEED_APIKEY=${XSEED_APIKEY}
-
-# Function to log messages
-log_message() {
-    local log_type="$1"
-    local message="$2"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [$log_type] $message" | tee -a "$LOG_FILE"
-}
-
-log_message "INFO" "xseed.sh script started $VERSION"
+XSEED_APIKEY=${XSEED_APIKEY:-}
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
-log_message "INFO" "Gathered Starr environment variables:"
+log_message "INFO" "Using Configuration:"
 log_message "INFO" "TORRENT_CLIENT_NAME=$TORRENT_CLIENT_NAME"
 log_message "INFO" "USENET_CLIENT_NAME=$USENET_CLIENT_NAME"
 log_message "INFO" "XSEED_HOST=$XSEED_HOST"
@@ -61,11 +59,11 @@ cross_seed_request() {
         headers+=(-H "X-Api-Key: $XSEED_APIKEY")
     fi
     response=$(curl --silent --output /dev/null --write-out "%{http_code}" "${headers[@]}")
-    
+
     if [ "$response" == "000" ]; then
         log_message "ERROR" "Failed to connect to $XSEED_HOST:$XSEED_PORT. Timeout or connection refused."
     fi
-    
+
     echo "$response"
 }
 
@@ -94,23 +92,23 @@ detect_application() {
             # shellcheck disable=SC2154 # These are set by Starr on call
             folderPath="$sonarr_destinationpath"
         else
-            if [ -z "$sonarr_release_releasetype" ]; then {
+            if [ -z "$sonarr_release_releasetype" ]; then
                 # shellcheck disable=SC2154 # These are set by Starr on call
                 folderPath="$sonarr_episodefile_sourcefolder"
                 # shellcheck disable=SC2154 # These are set by Starr on call
                 filePath="$sonarr_episodefile_path"
-            }
             else
                 # shellcheck disable=SC2154 # These are set by Starr on call
                 filePath="$sonarr_episodefile_paths"
             fi
         fi
+
         # shellcheck disable=SC2154 # These are set by Starr on call
         eventType="$sonarr_eventtype"
     fi
     if [ "$app" == "unknown" ]; then
         log_message "ERROR" "Unknown application type detected. Exiting."
-        exit 1
+        exit 2
     fi
     log_message "INFO" "Detected application: $app"
 }
@@ -142,14 +140,14 @@ validate_process() {
 
     if [ -z "$filePath" ] && [ -z "$folderPath" ] && [ -z "$downloadID" ]; then
         log_message "ERROR" "Essential parameters missing. Exiting."
-        exit 1
+        exit 2
     fi
 
     if [ -z "$downloadID" ]; then
         log_message "ERROR" "Download ID is missing. Checking if file path works for data/path based cross-seeding."
         if [[ -z "$filePath" && -z "$folderPath" ]]; then
             log_message "ERROR" "File and Folder paths are missing. Exiting."
-            exit 1
+            exit 2
         fi
     fi
 }
@@ -188,7 +186,7 @@ handle_operations() {
         ;;
     *)
         log_message "ERROR" "Unrecognized client $clientID. Exiting."
-        exit 1
+        exit 2
         ;;
     esac
 
@@ -197,6 +195,9 @@ handle_operations() {
         echo "$unique_id" >>"$LOG_FILE"
         log_message "INFO" "Process completed successfully."
     else
+        if [ "$xseed_resp" == "000" ]; then
+            log_message "ERROR" "Process Timed Out. Exiting."
+        fi
         log_message "ERROR" "Process failed with API response: $xseed_resp"
         exit 1
     fi
