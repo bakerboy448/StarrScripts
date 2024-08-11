@@ -16,7 +16,8 @@ ENV_PATH="$SCRIPT_DIR/.env"
 log_message() {
     local log_type="$1"
     local message="$2"
-    local log_line="$(date '+%Y-%m-%d %H:%M:%S') [$log_type] $message"
+    local log_line
+    log_line="$(date '+%Y-%m-%d %H:%M:%S') [$log_type] $message"
     if [ -f "$LOG_FILE" ]; then
         echo "$log_line" | tee -a "$LOG_FILE"
     else
