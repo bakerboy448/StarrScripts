@@ -8,7 +8,7 @@
 
 # Load environment variables from .env file if it exists
 # in the same directory as this bash script
-VERSION='2.1.0'
+VERSION='2.1.1'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_PATH="$SCRIPT_DIR/.env"
 
@@ -16,8 +16,14 @@ ENV_PATH="$SCRIPT_DIR/.env"
 log_message() {
     local log_type="$1"
     local message="$2"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [$log_type] $message" | tee -a "$LOG_FILE"
+    local log_line="$(date '+%Y-%m-%d %H:%M:%S') [$log_type] $message"
+    if [ -f "$LOG_FILE" ]; then
+        echo "$log_line" | tee -a "$LOG_FILE"
+    else
+        echo "$log_line"
+    fi
 }
+
 log_message "INFO" "xseed.sh script started $VERSION"
 EVAR=false
 if [ -f "$ENV_PATH" ]; then
