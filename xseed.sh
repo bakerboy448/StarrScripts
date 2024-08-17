@@ -125,6 +125,7 @@ detect_application() {
 # Validate the process
 validate_process() {
     [ ! -f "$LOG_FILE" ] && touch "$LOG_FILE"
+    [ ! -f "$LOGID_FILE" ] && touch "$LOGID_FILE"
     unique_id="${downloadID}-${clientID}"
 
     if [ -z "$unique_id" ]; then
@@ -132,8 +133,8 @@ validate_process() {
         exit 1
     fi
 
-    if grep -qF "$unique_id" "$LOG_FILE"; then
-        log_message "INFO" "Download ID $unique_id already processed. Exiting."
+    if grep -qF "$unique_id" "$LOGID_FILE"; then
+        log_message "INFO" "Download ID [$unique_id] already processed and logged in [$LOGID_FILE]. Exiting."
         exit 0
     fi
 
