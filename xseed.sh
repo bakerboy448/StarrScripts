@@ -8,7 +8,7 @@
 
 # Load environment variables from .env file if it exists
 # in the same directory as this bash script
-VERSION='2.1.1'
+VERSION='2.2.1'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_PATH="$SCRIPT_DIR/.env"
 
@@ -48,6 +48,7 @@ USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
+LOGID_FILE=${LOG_FILE:-/config/xseed-id.log}
 XSEED_APIKEY=${XSEED_APIKEY:-}
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
 log_message "INFO" "Using Configuration:"
@@ -56,6 +57,7 @@ log_message "INFO" "USENET_CLIENT_NAME=$USENET_CLIENT_NAME"
 log_message "INFO" "XSEED_HOST=$XSEED_HOST"
 log_message "INFO" "XSEED_PORT=$XSEED_PORT"
 log_message "INFO" "LOG_FILE=$LOG_FILE"
+log_message "INFO" "LOGID_FILE=$LOGID_FILE"
 
 # Function to send a request to Cross Seed API
 cross_seed_request() {
@@ -123,6 +125,7 @@ detect_application() {
 # Validate the process
 validate_process() {
     [ ! -f "$LOG_FILE" ] && touch "$LOG_FILE"
+    [ ! -f "$LOGID_FILE" ] && touch "$LOGID_FILE"
     unique_id="${downloadID}-${clientID}"
 
     if [ -z "$unique_id" ]; then
@@ -130,8 +133,8 @@ validate_process() {
         exit 1
     fi
 
-    if grep -qF "$unique_id" "$LOG_FILE"; then
-        log_message "INFO" "Download ID $unique_id already processed. Exiting."
+    if grep -qF "$unique_id" "$LOGID_FILE"; then
+        log_message "INFO" "Download ID [$unique_id] already processed and logged in [$LOGID_FILE]. Exiting."
         exit 0
     fi
 
@@ -199,7 +202,7 @@ handle_operations() {
 
     log_message "INFO" "Cross-seed API response: $xseed_resp"
     if [ "$xseed_resp" == "204" ]; then
-        echo "$unique_id" >>"$LOG_FILE"
+        echo "$unique_id" >>"$LOGID_FILE"
         log_message "INFO" "Process completed successfully."
     else
         if [ "$xseed_resp" == "000" ]; then
