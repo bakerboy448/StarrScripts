@@ -8,7 +8,7 @@
 
 # Load environment variables from .env file if it exists
 # in the same directory as this bash script
-VERSION='2.2.1'
+VERSION='3.0.0'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_PATH="$SCRIPT_DIR/.env"
 
