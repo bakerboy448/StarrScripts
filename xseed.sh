@@ -48,7 +48,7 @@ USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
-LOGID_FILE=${LOG_FILE:-/config/xseed-id.log}
+LOGID_FILE=${LOGID_FILE:-/config/xseed-id.log}
 XSEED_APIKEY=${XSEED_APIKEY:-}
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
 log_message "INFO" "Using Configuration:"
