@@ -18,10 +18,11 @@ All scripts are **Created By: [Bakerboy448](https://github.com/bakerboy448/) unl
 
 -   **Script:** `xseed.sh`
 -   **Description:** Triggers a cross-seed search post-import or post-upgrade in Starr applications.
--   **Creator:** [Bakerboy448](https://github.com/bakerboy448/) with assitance from [zakkarry](https://github.com/zakkarry)
--   **Setup:**
+-   **Creator:** [Bakerboy448](https://github.com/bakerboy448/) with assistance from [zakkarry](https://github.com/zakkarry)
+- **Setup**
     1. Copy `.env.sample` to `.env`.
     2. Populate required values under "# Xseed" header.
+    3. Docker Users: Mount `.env` and `xseed.sh` to your Starr's `/config` mount.
 
 ### Cross-Seed Updater
 
