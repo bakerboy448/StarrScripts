@@ -5,12 +5,17 @@ Occasionally holds random useful scripts as well.
 These scripts are designed to enhance functionality, improve management, and automate routine tasks.
 All scripts are **Created By: [Bakerboy448](https://github.com/bakerboy448/) unless otherwise noted.**
 
+**Warning**: Do not edit files on Windows that will be executed on Linux without ensuring the line-endings are set to `LF`.
+This means that `CRLF` cannot be used in .sh scripts. Bash scripts will not execute properly and you will receive an
+error.
+
 ## Scripts Overview
 
 ### Cross-Seed Category Filter for Qbittorrent
 
 -   **Script:** `xseed_qbit_cat_filter.sh`
 -   **Description:** Filters cross-seed requests by categories or trackers for execution by Qbittorrent.
+-   **Instructions:** Open the file in a text editor and modify the variable definitions at the top of the script, then replace the "Execute on completion" command in qBittorrent with the one given in the notes at the top of the script.
 -   **Creator:** [zakkarry](https://github.com/zakkarry)
 -   **Usage:** Execute the script to filter categories or trackers as needed in Qbittorrent setups.
 
@@ -19,10 +24,13 @@ All scripts are **Created By: [Bakerboy448](https://github.com/bakerboy448/) unl
 -   **Script:** `xseed.sh`
 -   **Description:** Triggers a cross-seed search post-import or post-upgrade in Starr applications.
 -   **Creator:** [Bakerboy448](https://github.com/bakerboy448/) with assistance from [zakkarry](https://github.com/zakkarry)
-- **Setup**
-    1. Copy `.env.sample` to `.env`.
-    2. Populate required values under "# Xseed" header.
-    3. Docker Users: Mount `.env` and `xseed.sh` to your Starr's `/config` mount.
+-   **Instructions**
+    1. If using environmental variables file, copy `.env.sample` to `.env`.
+    2. If not using `.env`, open the script in a text editor and modify the required values under "# Xseed" header.
+    3. Ensure that your download client's _NAME_ in the Download Client section of the respective \*arr match the variables in the script.
+    4. Docker Users: Mount `.env` and `xseed.sh` to your Starr's `/config` mount.
+    5. In your \*arr, navigate to `Settings` -> `Connect` and add a "Custom Script" for the "On Import Complete" for Sonarr and "On File Import" and "On File Upgrade" for Radarr.
+    6. Test and Save.
 
 ### Cross-Seed Updater
 
@@ -33,7 +41,7 @@ All scripts are **Created By: [Bakerboy448](https://github.com/bakerboy448/) unl
 
 -   **Script:** `dupe.sh`
 -   **Description:** Executes `jdupes` to find and manage duplicate files in the specified directory.
--   **Setup:**
+-   **Instructions:**
     1. Copy `.env.sample` to `.env`.
     2. Populate required values under "# Jdupes" header.
     3. Review and adjust script parameters to fit your use case.
@@ -49,7 +57,7 @@ All scripts are **Created By: [Bakerboy448](https://github.com/bakerboy448/) unl
     -   **Error Handling:** Captures and logs errors during the merging process, ensuring reliable operations.
     -   **Detailed Logging:** Tracks and logs every file and directory operation, providing clear visibility into the process.
 -   **Usage Case:** Ideal for consolidating data in scenarios like organizing media libraries, merging data backups, or simplifying file system structures.
--   **Setup:**
+-   **Instructions:**
     1. Update `source_dirs` and uncomment the variable
     2. Update `target_dir` and uncomment the variable
     3. Uncomment `atomic_moves` to engage the movement operation
@@ -77,7 +85,7 @@ All scripts are **Created By: [Bakerboy448](https://github.com/bakerboy448/) unl
 
 -   **Script:** `qbm-qbit.sh`
 -   **Description:** Executes [QbitManage](https://github.com/StuffAnThings/qbit_manage) upon download completion in Qbittorrent.
--   **Setup:**
+-   **Instructions:**
     1. Copy `.env.sample` to `.env`.
     2. Populate required values under "# Qbittorrent Manage" header.
 
@@ -96,7 +104,7 @@ All scripts are **Created By: [Bakerboy448](https://github.com/bakerboy448/) unl
 
 -   **Script:** `zfsburn.sh`
 -   **Description:** Deletes ZFS autosnapshots older than a specified number of days.
--   **Setup:**
+-   **Instructions:**
     1. Copy `.env.sample` to `.env`.
     2. Fill in the required values under "# ZFS Destroy" header.
 
