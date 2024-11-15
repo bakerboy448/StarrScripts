@@ -52,9 +52,21 @@ LOG_FILE=${LOG_FILE:-/config/xseed.log}
 LOGID_FILE=${LOGID_FILE:-/config/xseed-id.log}
 XSEED_APIKEY=${XSEED_APIKEY:-}
 
+# Save original IFS
+OLD_IFS="$IFS"
+
 # Convert comma-separated strings to arrays
 IFS=',' read -r -a TORRENT_CLIENT_ARRAY <<< "$TORRENT_CLIENTS"
 IFS=',' read -r -a USENET_CLIENT_ARRAY <<< "$USENET_CLIENTS"
+
+# Restore original IFS
+IFS="$OLD_IFS"
+
+# Trim whitespace from array elements
+TORRENT_CLIENT_ARRAY=("${TORRENT_CLIENT_ARRAY[@]/#[[:space:]]/}")
+TORRENT_CLIENT_ARRAY=("${TORRENT_CLIENT_ARRAY[@]/%[[:space:]]/}")
+USENET_CLIENT_ARRAY=("${USENET_CLIENT_ARRAY[@]/#[[:space:]]/}")
+USENET_CLIENT_ARRAY=("${USENET_CLIENT_ARRAY[@]/%[[:space:]]/}")
 
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
 log_message "INFO" "Using configuration:"
