@@ -11,6 +11,7 @@
 VERSION='3.2.0'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_PATH="$SCRIPT_DIR/.env"
+OLD_IFS="$IFS"
 
 # Function to log messages
 log_message() {
@@ -42,33 +43,43 @@ else
     log_message "DEBUG" ".env file not found in script directory ($ENV_PATH)"
 fi
 
+### START OF CONFIGURATION SECTION
+### START OF CONFIGURATION SECTION
+
 # Use environment variables with descriptive default values
-# format for up to as many clients as you need 
-# Multiple clients: (${TORRENT_CLIENTS:-"Qbit","Qbit2"})
-# Single Client: (${TORRENT_CLIENTS:-"Qbit"})
-TORRENT_CLIENTS=(${TORRENT_CLIENTS:-"Qbit"})
-USENET_CLIENTS=(${USENET_CLIENTS:-"SABnzbd"})
+# If you are not using environmental variables set your client
+# in the ELSE section of the following if-else statement
+
+if [[ -n "$TORRENT_CLIENTS" || -n "$USENET_CLIENTS" ]]; then
+    # Convert from env to arrays
+    IFS=','
+    read -r -a TORRENT_CLIENTS <<<"$TORRENT_CLIENTS"
+    read -r -a USENET_CLIENTS <<<"$USENET_CLIENTS"
+else
+    # If you are not using environmental variables set your client here
+    # format for up to as many clients as you need
+    # Multiple clients: (${TORRENT_CLIENTS:-"Qbit","Qbit2"})
+    # Single Client: (${TORRENT_CLIENTS:-"Qbit"})
+    TORRENT_CLIENTS=("Qbit")
+    USENET_CLIENTS=("SABnzbd")
+fi
+
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
 LOGID_FILE=${LOGID_FILE:-/config/xseed-id.log}
 XSEED_APIKEY=${XSEED_APIKEY:-}
 
-# Save original IFS
-OLD_IFS="$IFS"
-
-# Convert comma-separated strings to arrays
-IFS=',' read -r -a TORRENT_CLIENT_ARRAY <<< "$TORRENT_CLIENTS"
-IFS=',' read -r -a USENET_CLIENT_ARRAY <<< "$USENET_CLIENTS"
+### END OF CONFIGURATION SECTION
+### END OF CONFIGURATION SECTION
 
 # Restore original IFS
 IFS="$OLD_IFS"
 
-
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
-log_message "INFO" "Using configuration:"
-log_message "INFO" "TORRENT_CLIENTS=$TORRENT_CLIENTS"
-log_message "INFO" "USENET_CLIENTS=$USENET_CLIENTS"
+log_message "INFO" "Using Configuration:"
+log_message "INFO" "TORRENT_CLIENTS=$(printf '"%s" ' "${TORRENT_CLIENTS[@]}")"
+log_message "INFO" "USENET_CLIENTS=$(printf '"%s" ' "${USENET_CLIENTS[@]}")"
 log_message "INFO" "XSEED_HOST=$XSEED_HOST"
 log_message "INFO" "XSEED_PORT=$XSEED_PORT"
 log_message "INFO" "LOG_FILE=$LOG_FILE"
@@ -79,22 +90,20 @@ is_valid_client() {
     local client="$1"
     local client_type="$2"
     case $client_type in
-        "torrent")
-            for allowed_client in "${TORRENT_CLIENTS[@]}"; do
-                if [[ "$client" == "$allowed_client" ]]; then
-                    return 0
-                    break
-                fi
-            done
-            ;;
-        "usenet")
-            for allowed_client in "${USENET_CLIENTS[@]}"; do
-                if [[ "$client" == "$allowed_client" ]]; then
-                    return 0
-                    break
-                fi
-            done
-            ;;
+    "torrent")
+        for allowed_client in "${TORRENT_CLIENTS[@]}"; do
+            if [[ "$client" == "$allowed_client" ]]; then
+                return 0
+            fi
+        done
+        ;;
+    "usenet")
+        for allowed_client in "${USENET_CLIENTS[@]}"; do
+            if [[ "$client" == "$allowed_client" ]]; then
+                return 0
+            fi
+        done
+        ;;
     esac
     return 1
 }
@@ -215,7 +224,7 @@ send_data_search() {
 handle_operations() {
     detect_application
     validate_process
-    
+
     # Check if client is a torrent client
     if is_valid_client "$clientID" "torrent"; then
         log_message "INFO" "Processing torrent client operations for $clientID..."
