@@ -78,27 +78,24 @@ log_message "INFO" "LOGID_FILE=$LOGID_FILE"
 is_valid_client() {
     local client="$1"
     local client_type="$2"
-    local valid=false
-    
-    if [ "$client_type" == "torrent" ]; then
-        for allowed_client in "${TORRENT_CLIENT_ARRAY[@]}"; do
-            if [ "$client" == "$allowed_client" ]; then
-                valid=true
-                break
-            fi
-        done
-    elif [ "$client_type" == "usenet" ]; then
-        for allowed_client in "${USENET_CLIENT_ARRAY[@]}"; do
-            if [ "$client" == "$allowed_client" ]; then
-                valid=true
-                break
-            fi
-        done
-    fi
-    
-    if [[ "$valid" == "true" ]]; then
-        return 0
-    fi
+    case $client_type in
+        "torrent")
+            for allowed_client in "${TORRENT_CLIENTS[@]}"; do
+                if [[ "$client" == "$allowed_client" ]]; then
+                    return 0
+                    break
+                fi
+            done
+            ;;
+        "usenet")
+            for allowed_client in "${USENET_CLIENTS[@]}"; do
+                if [[ "$client" == "$allowed_client" ]]; then
+                    return 0
+                    break
+                fi
+            done
+            ;;
+    esac
     return 1
 }
 
