@@ -43,9 +43,11 @@ else
 fi
 
 # Use environment variables with descriptive default values
-# For multiple clients, use format: client1,client2,client3
-TORRENT_CLIENTS=${TORRENT_CLIENTS:-"Qbit"}
-USENET_CLIENTS=${USENET_CLIENTS:-"SABnzbd"}
+# format for up to as many clients as you need 
+# Multiple clients: (${TORRENT_CLIENTS:-"Qbit","Qbit2"})
+# Single Client: (${TORRENT_CLIENTS:-"Qbit"})
+TORRENT_CLIENTS=(${TORRENT_CLIENTS:-"Qbit"})
+USENET_CLIENTS=(${USENET_CLIENTS:-"SABnzbd"})
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
