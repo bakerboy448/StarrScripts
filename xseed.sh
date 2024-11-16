@@ -43,9 +43,11 @@ else
 fi
 
 # Use environment variables with descriptive default values
-# For multiple clients, use format: client1,client2,client3
-TORRENT_CLIENTS=${TORRENT_CLIENTS:-"Qbit"}
-USENET_CLIENTS=${USENET_CLIENTS:-"SABnzbd"}
+# format for up to as many clients as you need 
+# Multiple clients: (${TORRENT_CLIENTS:-"Qbit","Qbit2"})
+# Single Client: (${TORRENT_CLIENTS:-"Qbit"})
+TORRENT_CLIENTS=(${TORRENT_CLIENTS:-"Qbit"})
+USENET_CLIENTS=(${USENET_CLIENTS:-"SABnzbd"})
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
@@ -62,11 +64,6 @@ IFS=',' read -r -a USENET_CLIENT_ARRAY <<< "$USENET_CLIENTS"
 # Restore original IFS
 IFS="$OLD_IFS"
 
-# Trim whitespace from array elements
-TORRENT_CLIENT_ARRAY=("${TORRENT_CLIENT_ARRAY[@]/#[[:space:]]/}")
-TORRENT_CLIENT_ARRAY=("${TORRENT_CLIENT_ARRAY[@]/%[[:space:]]/}")
-USENET_CLIENT_ARRAY=("${USENET_CLIENT_ARRAY[@]/#[[:space:]]/}")
-USENET_CLIENT_ARRAY=("${USENET_CLIENT_ARRAY[@]/%[[:space:]]/}")
 
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
 log_message "INFO" "Using configuration:"
