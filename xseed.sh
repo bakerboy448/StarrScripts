@@ -230,7 +230,7 @@ handle_operations() {
             send_data_search
         fi
     # Check if client is a usenet client
-    elif [ "$(is_valid_client "$clientID" "usenet")" == "true" ]; then
+    elif is_valid_client "$clientID" "usenet"; then
         if [ -z "$sonarrReleaseType" ] && [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]]; then
             log_message "WARN" "Depreciated Action. Skipping season pack search. Please switch to On Import Complete for Usenet Season Pack Support!"
             exit 0
