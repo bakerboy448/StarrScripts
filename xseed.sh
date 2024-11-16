@@ -78,25 +78,25 @@ log_message "INFO" "LOGID_FILE=$LOGID_FILE"
 is_valid_client() {
     local client="$1"
     local client_type="$2"
-    local valid=false
-    
-    if [ "$client_type" == "torrent" ]; then
-        for allowed_client in "${TORRENT_CLIENT_ARRAY[@]}"; do
-            if [ "$client" == "$allowed_client" ]; then
-                valid=true
-                break
-            fi
-        done
-    elif [ "$client_type" == "usenet" ]; then
-        for allowed_client in "${USENET_CLIENT_ARRAY[@]}"; do
-            if [ "$client" == "$allowed_client" ]; then
-                valid=true
-                break
-            fi
-        done
-    fi
-    
-    echo "$valid"
+    case $client_type in
+        "torrent")
+            for allowed_client in "${TORRENT_CLIENTS[@]}"; do
+                if [[ "$client" == "$allowed_client" ]]; then
+                    return 0
+                    break
+                fi
+            done
+            ;;
+        "usenet")
+            for allowed_client in "${USENET_CLIENTS[@]}"; do
+                if [[ "$client" == "$allowed_client" ]]; then
+                    return 0
+                    break
+                fi
+            done
+            ;;
+    esac
+    return 1
 }
 
 # Function to send a request to Cross Seed API
@@ -217,7 +217,7 @@ handle_operations() {
     validate_process
     
     # Check if client is a torrent client
-    if [ "$(is_valid_client "$clientID" "torrent")" == "true" ]; then
+    if is_valid_client "$clientID" "torrent"; then
         log_message "INFO" "Processing torrent client operations for $clientID..."
         if [ -n "$downloadID" ]; then
             xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID")
@@ -227,7 +227,7 @@ handle_operations() {
             send_data_search
         fi
     # Check if client is a usenet client
-    elif [ "$(is_valid_client "$clientID" "usenet")" == "true" ]; then
+    elif is_valid_client "$clientID" "usenet"; then
         if [ -z "$sonarrReleaseType" ] && [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]]; then
             log_message "WARN" "Depreciated Action. Skipping season pack search. Please switch to On Import Complete for Usenet Season Pack Support!"
             exit 0
