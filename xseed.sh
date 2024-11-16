@@ -96,7 +96,10 @@ is_valid_client() {
         done
     fi
     
-    echo "$valid"
+    if [[ "$valid" == "true" ]]; then
+        return 0
+    fi
+    return 1
 }
 
 # Function to send a request to Cross Seed API
