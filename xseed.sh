@@ -64,11 +64,6 @@ IFS=',' read -r -a USENET_CLIENT_ARRAY <<< "$USENET_CLIENTS"
 # Restore original IFS
 IFS="$OLD_IFS"
 
-# Trim whitespace from array elements
-TORRENT_CLIENT_ARRAY=("${TORRENT_CLIENT_ARRAY[@]/#[[:space:]]/}")
-TORRENT_CLIENT_ARRAY=("${TORRENT_CLIENT_ARRAY[@]/%[[:space:]]/}")
-USENET_CLIENT_ARRAY=("${USENET_CLIENT_ARRAY[@]/#[[:space:]]/}")
-USENET_CLIENT_ARRAY=("${USENET_CLIENT_ARRAY[@]/%[[:space:]]/}")
 
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
 log_message "INFO" "Using configuration:"
