@@ -220,7 +220,7 @@ handle_operations() {
     validate_process
     
     # Check if client is a torrent client
-    if [ "$(is_valid_client "$clientID" "torrent")" == "true" ]; then
+    if is_valid_client "$clientID" "torrent"; then
         log_message "INFO" "Processing torrent client operations for $clientID..."
         if [ -n "$downloadID" ]; then
             xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID")
