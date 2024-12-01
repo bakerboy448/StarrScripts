@@ -8,9 +8,10 @@
 
 # Load environment variables from .env file if it exists
 # in the same directory as this bash script
-VERSION='3.1.0'
+VERSION='4.0.0'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_PATH="$SCRIPT_DIR/.env"
+OLD_IFS="$IFS"
 
 # Function to log messages
 log_message() {
@@ -42,22 +43,69 @@ else
     log_message "DEBUG" ".env file not found in script directory ($ENV_PATH)"
 fi
 
+### START OF CONFIGURATION SECTION
+### START OF CONFIGURATION SECTION
+
 # Use environment variables with descriptive default values
-TORRENT_CLIENT_NAME=${TORRENT_CLIENT_NAME:-Qbit}
-USENET_CLIENT_NAME=${USENET_CLIENT_NAME:-SABnzbd}
+# If you are not using environmental variables set your client
+# in the ELSE section of the following if-else statement
+
+if [[ -n "$TORRENT_CLIENTS" || -n "$USENET_CLIENTS" ]]; then
+    # Convert from env to arrays
+    IFS=','
+    read -r -a TORRENT_CLIENTS <<<"$TORRENT_CLIENTS"
+    read -r -a USENET_CLIENTS <<<"$USENET_CLIENTS"
+else
+    # If you are not using environmental variables set your client here
+    # format for up to as many clients as you need
+    # Multiple clients: (${TORRENT_CLIENTS:-"Qbit","Qbit2"})
+    # Single Client: (${TORRENT_CLIENTS:-"Qbit"})
+    TORRENT_CLIENTS=("Qbit")
+    USENET_CLIENTS=("SABnzbd")
+fi
+
 XSEED_HOST=${XSEED_HOST:-crossseed}
 XSEED_PORT=${XSEED_PORT:-8080}
 LOG_FILE=${LOG_FILE:-/config/xseed.log}
 LOGID_FILE=${LOGID_FILE:-/config/xseed-id.log}
 XSEED_APIKEY=${XSEED_APIKEY:-}
+
+### END OF CONFIGURATION SECTION
+
+# Restore original IFS
+IFS="$OLD_IFS"
+
 log_message "DEBUG" "Using '.env' file for config?: $EVAR"
 log_message "INFO" "Using Configuration:"
-log_message "INFO" "TORRENT_CLIENT_NAME=$TORRENT_CLIENT_NAME"
-log_message "INFO" "USENET_CLIENT_NAME=$USENET_CLIENT_NAME"
+log_message "INFO" "TORRENT_CLIENTS=$(printf '"%s" ' "${TORRENT_CLIENTS[@]}")"
+log_message "INFO" "USENET_CLIENTS=$(printf '"%s" ' "${USENET_CLIENTS[@]}")"
 log_message "INFO" "XSEED_HOST=$XSEED_HOST"
 log_message "INFO" "XSEED_PORT=$XSEED_PORT"
 log_message "INFO" "LOG_FILE=$LOG_FILE"
 log_message "INFO" "LOGID_FILE=$LOGID_FILE"
+
+# Function to check if a client is in the allowed list
+is_valid_client() {
+    local client="$1"
+    local client_type="$2"
+    case $client_type in
+    "torrent")
+        for allowed_client in "${TORRENT_CLIENTS[@]}"; do
+            if [[ "$client" == "$allowed_client" ]]; then
+                return 0
+            fi
+        done
+        ;;
+    "usenet")
+        for allowed_client in "${USENET_CLIENTS[@]}"; do
+            if [[ "$client" == "$allowed_client" ]]; then
+                return 0
+            fi
+        done
+        ;;
+    esac
+    return 1
+}
 
 # Function to send a request to Cross Seed API
 cross_seed_request() {
@@ -175,9 +223,9 @@ send_data_search() {
 handle_operations() {
     detect_application
     validate_process
-    case "$clientID" in
-    "$TORRENT_CLIENT_NAME")
-        log_message "INFO" "Processing torrent client operations..."
+    # Check if client is a torrent client
+    if is_valid_client "$clientID" "torrent"; then
+        log_message "INFO" "Processing torrent client operations for $clientID..."
         if [ -n "$downloadID" ]; then
             xseed_resp=$(cross_seed_request "webhook" "infoHash=$downloadID")
         fi
@@ -185,20 +233,18 @@ handle_operations() {
             sleep 15
             send_data_search
         fi
-        ;;
-    "$USENET_CLIENT_NAME")
+    # Check if client is a usenet client
+    elif is_valid_client "$clientID" "usenet"; then
         if [ -z "$sonarrReleaseType" ] && [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]]; then
             log_message "WARN" "Depreciated Action. Skipping season pack search. Please switch to On Import Complete for Usenet Season Pack Support!"
             exit 0
         fi
-        log_message "INFO" "Processing Usenet client operations..."
+        log_message "INFO" "Processing Usenet client operations for $clientID..."
         send_data_search
-        ;;
-    *)
+    else
         log_message "ERROR" "Unrecognized client $clientID. Exiting."
         exit 2
-        ;;
-    esac
+    fi
 
     log_message "INFO" "Cross-seed API response: $xseed_resp"
     if [ "$xseed_resp" == "204" ]; then
