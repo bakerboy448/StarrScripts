@@ -30,7 +30,7 @@ QBQBM_LOCK=${QBIT_MANAGE_LOCK_FILE_PATH:-/var/lock/qbm-qbit.lock}
 QBQBM_PATH_QBM=${QBIT_MANAGE_PATH:-/opt/qbit-manage}
 QBQBM_VENV_PATH=${QBIT_MANAGE_VENV_PATH:-/opt/qbit-manage/.venv}
 QBQBM_CONFIG_PATH=${QBIT_MANAGE_CONFIG_PATH:-/opt/qbit-manage/config.yml}
-QBQBM_QBIT_OPTIONS=${QBIT_MANAGE_OPTIONS:-"-cs -re -cu -tu -ru -sl -r"}
+QBQBM_QBIT_OPTIONS=${QBIT_MANAGE_OPTIONS:-"-re -cu -tu -ru -sl -r"}
 QBQBM_SLEEP_TIME=600
 QBQBM_LOCK_TIME=3600
 
