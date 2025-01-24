@@ -13,8 +13,8 @@ error.
 
 ### Cross-Seed Category Filter for Qbittorrent
 
-> This script has been removed and is no longer supported as part of Baker oy448's purge.
-> Please see the [v4.0.0 Release a notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
+> This script has been removed and is no longer supported as part of Bakerboy448's v4.0.0 purge.
+> Please see the [v4.0.0 Release Notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
 
 -   **Script:** `xseed_qbit_cat_filter.sh`
 -   **Description:** Filters cross-seed requests by categories or trackers for execution by Qbittorrent.
@@ -25,11 +25,11 @@ error.
 ### Cross-Seed Trigger for Starr Apps
 
 > This script has been removed and is no longer supported.
-> Please see the [v4.0.0 Release a notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
+> Please see the [v4.0.0 Release Notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
 
 -   **Script:** `xseed.sh`
 -   **Description:** Triggers a cross-seed search post-import or post-upgrade in Starr applications.
--   **Creator:** [Bakerboy448](https://github.com/bakerboy448/) with assistance from [zakkarry](https://github.com/zakkarry)
+-   **Creator:** [Bakerboy448](https://github.com/bakerboy448/) with assistance and many improvements from [zakkarry](https://github.com/zakkarry)
 -   **Instructions**
     1. If using environmental variables file, copy `.env.sample` to `.env`.
     2. If not using `.env`, open the script in a text editor and modify the required values under "# Xseed" header.
@@ -41,7 +41,7 @@ error.
 ### Cross-Seed Updater
 
 > This script has been removed and is no longer supported.
-> Please see the [v4.0.0 Release a notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
+> Please see the [v4.0.0 Release Notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
 
 -   **Script:** `xseed-update.sh`
 -   **Description:** Updates the [Cross-Seed](https://github.com/cross-seed/cross-seed) tool to its latest version.
