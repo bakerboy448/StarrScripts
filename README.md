@@ -13,6 +13,9 @@ error.
 
 ### Cross-Seed Category Filter for Qbittorrent
 
+> This script has been removed and is no longer supported as part of Baker oy448's purge.
+> Please see the [v4.0.0 Release a notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
+
 -   **Script:** `xseed_qbit_cat_filter.sh`
 -   **Description:** Filters cross-seed requests by categories or trackers for execution by Qbittorrent.
 -   **Instructions:** Open the file in a text editor and modify the variable definitions at the top of the script, then replace the "Execute on completion" command in qBittorrent with the one given in the notes at the top of the script.
@@ -20,6 +23,9 @@ error.
 -   **Usage:** Execute the script to filter categories or trackers as needed in Qbittorrent setups.
 
 ### Cross-Seed Trigger for Starr Apps
+
+> This script has been removed and is no longer supported.
+> Please see the [v4.0.0 Release a notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
 
 -   **Script:** `xseed.sh`
 -   **Description:** Triggers a cross-seed search post-import or post-upgrade in Starr applications.
@@ -33,6 +39,9 @@ error.
     6. Test and Save.
 
 ### Cross-Seed Updater
+
+> This script has been removed and is no longer supported.
+> Please see the [v4.0.0 Release a notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
 
 -   **Script:** `xseed-update.sh`
 -   **Description:** Updates the [Cross-Seed](https://github.com/cross-seed/cross-seed) tool to its latest version.
