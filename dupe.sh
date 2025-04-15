@@ -43,7 +43,7 @@ find_duplicates() {
     results=$("$JDUPES_COMMAND" "$JDUPES_EXCLUDE_DIRS" -X onlyext:"$JDUPES_INCLUDE_EXT" -r -M -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR")
 
     if [[ $results != *"No duplicates found."* ]]; then
-        "$JDUPES_COMMAND" "$JDUPES_EXCLUDE_DIRS" -X onlyext:"$JDUPES_INCLUDE_EXT" -r -L -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR" >>"$log_file"
+        "$JDUPES_COMMAND" $JDUPES_EXCLUDE_DIRS -X onlyext:"$JDUPES_INCLUDE_EXT" -r -L -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR" >>"$log_file"
     fi
 
     if [ "$DEBUG" == "true" ]; then
