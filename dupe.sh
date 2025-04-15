@@ -31,7 +31,7 @@ DEBUG=${DEBUG:-"false"}
 
 find_duplicates() {
     local log_file="$JDUPES_OUTPUT_LOG"
-    local start=$(date +%s)
+    local start_time=$(date +%s)
     echo "[$(date +"%Y-%m-%d %H:%M:%S")] Duplicate search started" | tee -a "$log_file"
 
     if [ "$DEBUG" == "true" ]; then
@@ -51,7 +51,9 @@ find_duplicates() {
     fi
 
     parse_jdupes_output "$results" "$log_file"
-    echo "[$(date +"%Y-%m-%d %H:%M:%S")] Duplicate search completed" | tee -a "$log_file"
+    local finish_time=$(date +%s)
+    local run_time=$((finish_time - start_time))
+    echo "[$(date +"%Y-%m-%d %H:%M:%S")] Duplicate search completed in ${run_time}s" | tee -a "$log_file"
 }
 
 parse_jdupes_output() {
