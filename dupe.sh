@@ -40,7 +40,7 @@ find_duplicates() {
     fi
 
     local results
-    results=$("$JDUPES_COMMAND" "$JDUPES_EXCLUDE_DIRS" -X onlyext:"$JDUPES_INCLUDE_EXT" -r -M -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR")
+    results=$("$JDUPES_COMMAND" $JDUPES_EXCLUDE_DIRS -X onlyext:"$JDUPES_INCLUDE_EXT" -r -M -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR")
 
     if [[ $results != *"No duplicates found."* ]]; then
         "$JDUPES_COMMAND" $JDUPES_EXCLUDE_DIRS -X onlyext:"$JDUPES_INCLUDE_EXT" -r -L -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR" >>"$log_file"
