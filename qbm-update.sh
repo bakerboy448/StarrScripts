@@ -11,14 +11,16 @@ QBM_SERVICE_NAME="qbmanage"
 QBM_UPSTREAM_GIT_REMOTE="origin"
 QBM_VERSION_FILE="$QBM_PATH/VERSION"
 QBM_REQUIREMENTS_FILE="$QBM_PATH/requirements.txt"
-CURRENT_UID=$(id -u)
+CURRENT_UID=$(id -un)
 
 # Check if QBM is installed and if the current user owns it
 check_qbm_installation() {
     if [ -d "$QBM_PATH" ]; then
-        qbm_repo_owner=$(stat -c '%u' "$QBM_PATH")
+        qbm_repo_owner=$(stat --format='%U' "$QBM_PATH")
+        qbm_repo_group=$(stat --format='%G' "$QBM_PATH")
         if [ "$qbm_repo_owner" != "$CURRENT_UID" ]; then
             echo "You do not own the QbitManage repo. Please run this script as the user that owns the repo [$qbm_repo_owner]."
+            echo "use 'sudo -u $qbm_repo_owner -g $qbm_repo_group qbm-update'"
             exit 1
         fi
     else
