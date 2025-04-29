@@ -35,7 +35,10 @@ def merge_directories(src, dst):
 def atomic_moves(source_directories, target_directory):
     """
     Handles atomic moving from multiple source directories to a single target directory.
+    Ensures that source_directories is a list.
     """
+    if not isinstance(source_directories, list):
+        raise TypeError("source_directories must be a list of strings.")
     for src in source_directories:
         logging.info(f"Processing source directory: {src}")
         try:
