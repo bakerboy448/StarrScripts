@@ -48,7 +48,7 @@ update_venv() {
     new_requirements=$(sha1sum "$QBM_REQUIREMENTS_FILE" | awk '{print $1}')
     if [ "$current_requirements" != "$new_requirements" ] || [ "$force_update" = true ]; then
         echo "=== Requirements changed, updating venv ==="
-        "$QBM_VENV_PATH/bin/python" "$QBM_VENV_PATH/bin/pip" install -r "$QBM_REQUIREMENTS_FILE"
+        "$QBM_VENV_PATH/bin/python" "$QBM_VENV_PATH/bin/pip" install .
     fi
 }
 
