@@ -24,14 +24,15 @@ JDUPES_OUTPUT_LOG=${JDUPES_OUTPUT_LOG:-"/mnt/data/jdupes.log"}
 JDUPES_SOURCE_DIR=${JDUPES_SOURCE_DIR:-"/mnt/data/media/"}
 JDUPES_DESTINATION_DIR=${JDUPES_DESTINATION_DIR:-"/mnt/data/torrents/"}
 JDUPES_HASH_DB=${JDUPES_HASH_DB:-"/.config/jdupes_hashdb"}
-JDUPES_COMMAND=${JDUPES_COMMAND:-"/usr/bin/jdupes"}
+JDUPES_COMMAND=${JDUPES_COMMAND:-"/usr/local/bin/jdupes"}
 JDUPES_EXCLUDE_DIRS=${JDUPES_EXCLUDE_DIRS:-"-X nostr:.RecycleBin -X nostr:.trash"}
 JDUPES_INCLUDE_EXT=${JDUPES_INCLUDE_EXT:-"mp4,mkv,avi"}
 DEBUG=${DEBUG:-"false"}
 
 find_duplicates() {
     local log_file="$JDUPES_OUTPUT_LOG"
-    local start_time=$(date +%s)
+    local start_time
+    start_time=$(date +%s)
     echo "[$(date +"%Y-%m-%d %H:%M:%S")] Duplicate search started" | tee -a "$log_file"
 
     if [ "$DEBUG" == "true" ]; then
@@ -40,9 +41,11 @@ find_duplicates() {
     fi
 
     local results
+    # shellcheck disable=SC2086
     results=$("$JDUPES_COMMAND" $JDUPES_EXCLUDE_DIRS -X onlyext:"$JDUPES_INCLUDE_EXT" -r -M -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR")
 
     if [[ $results != *"No duplicates found."* ]]; then
+        # shellcheck disable=SC2086
         "$JDUPES_COMMAND" $JDUPES_EXCLUDE_DIRS -X onlyext:"$JDUPES_INCLUDE_EXT" -r -L -y "$JDUPES_HASH_DB" "$JDUPES_SOURCE_DIR" "$JDUPES_DESTINATION_DIR" >>"$log_file"
     fi
 
@@ -51,7 +54,8 @@ find_duplicates() {
     fi
 
     parse_jdupes_output "$results" "$log_file"
-    local finish_time=$(date +%s)
+    local finish_time
+    finish_time=$(date +%s)
     local run_time=$((finish_time - start_time))
     echo "[$(date +"%Y-%m-%d %H:%M:%S")] Duplicate search completed in ${run_time}s" | tee -a "$log_file"
 }

@@ -351,3 +351,4 @@ MigrationBackup/
 
 # Ignore .env
 .env
+xseed.sh
