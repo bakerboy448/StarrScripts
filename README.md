@@ -72,12 +72,6 @@ error.
     3. Uncomment `atomic_moves` to engage the movement operation
     4. Run the script with `python3 merge_folders.py`
 
-### Notifiarr Branch Builder
-
--   **Script:** `notifiarr-branch-builder.sh`
--   **Description:** Reinstalls [Notifiarr](https://github.com/Notifiarr/notifiarr) and allows selection of the installation branch, from apt or built from source.
--   **Review:** Validate script parameters to ensure compatibility with your system.
-
 ### Plex Image Cleanup Updater
 
 -   **Script:** `pic-update.sh`
@@ -97,6 +91,23 @@ error.
 -   **Instructions:**
     1. Copy `.env.sample` to `.env`.
     2. Populate required values under "# Qbittorrent Manage" header.
+
+### QbitManage API Trigger
+
+-   **Script:** `qbm-api-trigger.sh`
+-   **Description:** Triggers [QbitManage](https://github.com/StuffAnThings/qbit_manage) commands via Web API for specific torrent hashes.
+-   **Requirements:**
+    -   QbitManage v4.5+ with Web API enabled (`QBT_WEB_SERVER=true`)
+    -   QbitManage container accessible via HTTP
+-   **Instructions:**
+    1. Configure QbitManage Web API in your docker-compose.yml
+    2. In qBittorrent, navigate to `Options` -> `Downloads` -> `Run external program on torrent completion`
+    3. Add command: `/path/to/qbm-api-trigger.sh %I`
+    4. The `%I` variable passes the torrent hash to trigger commands like `tag_update`, `share_limits`, `rem_unregistered`, and `recheck`
+-   **Notes:**
+    -   Script sends POST request to `http://127.0.0.1:4269/api/run-command` by default
+    -   Modify `API_URL` and `COMMANDS` variables in script to customize behavior
+    -   All execution details logged to `run_qbit_manage_commands.log`
 
 ### QbitManage Updater
 
