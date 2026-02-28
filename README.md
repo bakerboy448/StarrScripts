@@ -11,40 +11,34 @@ error.
 
 ## Scripts Overview
 
-### Cross-Seed Category Filter for Qbittorrent
+### qui Cross-Seed Trigger for Starr Apps
 
-> This script has been removed and is no longer supported as part of Bakerboy448's v4.0.0 purge.
-> Please see the [v4.0.0 Release Notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
-
--   **Script:** `xseed_qbit_cat_filter.sh`
--   **Description:** Filters cross-seed requests by categories or trackers for execution by Qbittorrent.
--   **Instructions:** Open the file in a text editor and modify the variable definitions at the top of the script, then replace the "Execute on completion" command in qBittorrent with the one given in the notes at the top of the script.
--   **Creator:** [zakkarry](https://github.com/zakkarry)
--   **Usage:** Execute the script to filter categories or trackers as needed in Qbittorrent setups.
-
-### Cross-Seed Trigger for Starr Apps
-
-> This script has been removed and is no longer supported.
-> Please see the [v4.0.0 Release Notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
-
--   **Script:** `xseed.sh`
--   **Description:** Triggers a cross-seed search post-import or post-upgrade in Starr applications.
--   **Creator:** [Bakerboy448](https://github.com/bakerboy448/) with assistance and many improvements from [zakkarry](https://github.com/zakkarry)
--   **Instructions**
-    1. If using environmental variables file, copy `.env.sample` to `.env`.
-    2. If not using `.env`, open the script in a text editor and modify the required values under "# Xseed" header.
-    3. Ensure that your download client's _NAME_ in the Download Client section of the respective \*arr match the variables in the script.
-    4. Docker Users: Mount `.env` and `xseed.sh` to your Starr's `/config` mount.
-    5. In your \*arr, navigate to `Settings` -> `Connect` and add a "Custom Script" for the "On Import Complete" for Sonarr and "On File Import" and "On File Upgrade" for Radarr.
-    6. Test and Save.
-
-### Cross-Seed Updater
-
-> This script has been removed and is no longer supported.
-> Please see the [v4.0.0 Release Notes](https://github.com/bakerboy448/StarrScripts/releases/tag/v4.0.0)
-
--   **Script:** `xseed-update.sh`
--   **Description:** Updates the [Cross-Seed](https://github.com/cross-seed/cross-seed) tool to its latest version.
+-   **Script:** `qui-xseed.sh`
+-   **Description:** Triggers a [qui](https://github.com/qui-lern/qui) data-based cross-seed search when Radarr or Sonarr completes an import. The script creates a dir-scan entry in qui, triggers a scan, polls for completion, then cleans up.
+-   **Creator:** [Bakerboy448](https://github.com/bakerboy448/)
+-   **Requirements:**
+    -   [qui](https://github.com/qui-lern/qui) with API access enabled
+    -   Radarr/Sonarr with Custom Script connect support
+-   **Instructions:**
+    1. Copy `.env.sample` to `.env` and configure the `QUI_*` variables.
+    2. Docker Users: Mount `.env` and `qui-xseed.sh` to your Starr's `/config` mount.
+    3. In Radarr: `Settings` -> `Connect` -> `Custom Script` -> select "On Import" and "On Upgrade".
+    4. In Sonarr: `Settings` -> `Connect` -> `Custom Script` -> select "On Import Complete".
+    5. Test and Save.
+-   **Configuration (`.env`):**
+    -   `QUI_HOST` - qui hostname (default: `localhost`)
+    -   `QUI_PORT` - qui API port (default: `7476`)
+    -   `QUI_APIKEY` - qui API key
+    -   `QUI_TARGET_INSTANCE_ID` - qui instance ID (default: `1`)
+    -   `QUI_QBIT_PATH_PREFIX` - optional path prefix for qBittorrent
+    -   `QUI_TAGS` - optional comma-separated tags
+    -   `TORRENT_CLIENTS` - comma-separated torrent client names (default: `qBittorrent`)
+    -   `USENET_CLIENTS` - comma-separated usenet client names (default: `SABnzbd`)
+    -   `LOG_FILE` - log file path (default: `./qui_xseed.log`)
+-   **Notes:**
+    -   Only errors are written to stderr (which starr apps capture). All other logging goes to the log file only, to avoid noisy notifications.
+    -   The script is idempotent — duplicate download IDs are skipped via the ID log file.
+    -   Replaces the legacy `xseed.sh` (removed in v4.0.0) which used the cross-seed API directly.
 
 ### Duplicate File Manager
 
