@@ -78,14 +78,6 @@ error.
 -   **Description:** Updates [Plex Meta Manager](https://github.com/meisnate12/Plex-Meta-Manager) to the latest branch.
 -   **Review:** Confirm script parameters align with your configuration.
 
-### Qbittorrent Management Trigger
-
--   **Script:** `qbm-qbit.sh`
--   **Description:** Executes [QbitManage](https://github.com/StuffAnThings/qbit_manage) upon download completion in Qbittorrent.
--   **Instructions:**
-    1. Copy `.env.sample` to `.env`.
-    2. Populate required values under "# Qbittorrent Manage" header.
-
 ### QbitManage API Trigger
 
 -   **Script:** `qbm-api-trigger.sh`
@@ -113,6 +105,31 @@ error.
 
 -   **Script:** `servarr/servarr_bot_merge.sh`
 -   **Description:** Merges the latest changes from the Servarr Wiki Bot Branch into the Prowlarr Indexers Wiki Master.
+
+### Backup Config
+
+-   **Script:** `backup_config.sh`
+-   **Description:** Backs up configuration directories to a compressed archive.
+
+### Fail2ban Config Dump
+
+-   **Script:** `f2b-dump.sh`
+-   **Description:** Dumps Fail2ban configuration details to a temporary file for review.
+
+### Omegabrr Updater
+
+-   **Script:** `omegabrr_upgrade.sh`
+-   **Description:** Upgrades [Omegabrr](https://github.com/autobrr/omegabrr) to the latest version.
+
+### Radarr Duplicate Finder
+
+-   **Script:** `radarr_dupefinder.sh`
+-   **Description:** Finds duplicate files in Radarr library directories.
+
+### Sonarr Duplicate Finder
+
+-   **Script:** `sonarr_dupefinder.sh`
+-   **Description:** Finds duplicate files in Sonarr library directories.
 
 ### ZFS Snapshot Cleanup
 
