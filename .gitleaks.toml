@@ -1,0 +1,10 @@
+# Gitleaks configuration
+# https://github.com/gitleaks/gitleaks
+
+title = "StarrScripts gitleaks config"
+
+[allowlist]
+  description = "Global allowlist"
+  paths = [
+    '''\.env\.example''',
+  ]
