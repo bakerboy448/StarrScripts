@@ -124,8 +124,8 @@ error.
 
 ## Contributions
 
-Contributions to improve or expand the scripts collection are welcome. Please refer to the [contribution guidelines](https://github.com/bakerboy448/StarrScripts/blob/main/CONTRIBUTING.md) for more information.
+Contributions to improve or expand the scripts collection are welcome. Please refer to the [contribution guidelines](https://github.com/baker-scripts/StarrScripts/blob/main/CONTRIBUTING.md) for more information.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/bakerboy448/StarrScripts/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/baker-scripts/StarrScripts/blob/main/LICENSE) file for details.
