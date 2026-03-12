@@ -1,0 +1,49 @@
+name: Feature Request
+description: Suggest a new script or improvement
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Search existing issues before opening a new one.**
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - New script
+        - Enhancement to existing script
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: script
+    attributes:
+      label: Related script
+      options:
+        - qui-xseed.sh
+        - dupe.sh
+        - merge_folders.py
+        - backup_config.sh
+        - pmm-update.sh
+        - qbm-api-trigger.sh
+        - radarr_dupefinder.sh
+        - sonarr_dupefinder.sh
+        - zfsburn.sh
+        - Other / New
+        - N/A
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like?
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Why is this needed?
+    validations:
+      required: true

@@ -139,10 +139,18 @@ error.
     1. Copy `.env.sample` to `.env`.
     2. Fill in the required values under "# ZFS Destroy" header.
 
-## Contributions
+## Contributors
+
+<a href="https://github.com/baker-scripts/StarrScripts/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=baker-scripts/StarrScripts" alt="Contributors" />
+</a>
 
 Contributions to improve or expand the scripts collection are welcome. Please refer to the [contribution guidelines](https://github.com/baker-scripts/StarrScripts/blob/main/CONTRIBUTING.md) for more information.
 
+## Disclaimer
+
+These scripts are provided as-is with no warranty. Scripts may delete files, modify configurations, or interact with external APIs. Always review scripts before running and test in a non-production environment first. The authors are not responsible for any data loss or issues resulting from their use.
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/baker-scripts/StarrScripts/blob/main/LICENSE) file for details.
+[MIT](LICENSE)

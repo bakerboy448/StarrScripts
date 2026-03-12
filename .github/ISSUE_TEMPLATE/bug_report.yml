@@ -1,0 +1,111 @@
+name: Bug Report
+description: Report a bug with a script
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Fill out all required fields.** Incomplete reports will be closed.
+  - type: dropdown
+    id: script
+    attributes:
+      label: Script
+      options:
+        - qui-xseed.sh
+        - dupe.sh
+        - merge_folders.py
+        - backup_config.sh
+        - f2b-dump.sh
+        - pmm-update.sh
+        - qbm-api-trigger.sh
+        - radarr_dupefinder.sh
+        - sonarr_dupefinder.sh
+        - zfsburn.sh
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Linux (Debian/Ubuntu)
+        - Linux (RHEL/Fedora)
+        - Linux (other)
+        - macOS
+        - Windows (WSL)
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment method
+      options:
+        - Native (script run directly on host)
+        - Docker (script mounted into container)
+    validations:
+      required: true
+  - type: input
+    id: bash-version
+    attributes:
+      label: Bash version
+      description: "Output of: bash --version | head -1"
+      placeholder: "GNU bash, version 5.2.15(1)-release"
+    validations:
+      required: true
+  - type: dropdown
+    id: starr-app
+    attributes:
+      label: Starr app (if applicable)
+      options:
+        - Radarr
+        - Sonarr
+        - Lidarr
+        - Readarr
+        - Prowlarr
+        - N/A
+  - type: input
+    id: starr-version
+    attributes:
+      label: Starr app version
+      description: "System → Status in the Starr app UI. Leave blank if N/A."
+      placeholder: "5.14.0.9383"
+  - type: dropdown
+    id: starr-branch
+    attributes:
+      label: Starr app branch
+      options:
+        - master / main
+        - develop
+        - nightly
+        - N/A
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Paste the full error output. Redact any secrets.
+      render: text
+    validations:
+      required: true
