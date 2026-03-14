@@ -6,6 +6,7 @@ jobs:
   shellcheck:
     name: Run ShellCheck
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
