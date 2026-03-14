@@ -1,6 +1,17 @@
+---
 name: ShellCheck
 
-on: [push, pull_request]
+"on":
+  push:
+    branches: [main]
+    paths:
+      - "**/*.sh"
+  pull_request:
+    paths:
+      - "**/*.sh"
+
+permissions:
+  contents: read
 
 jobs:
   shellcheck:
@@ -8,14 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-    - name: Install ShellCheck
-      run: sudo apt-get install -y shellcheck
-
-    - name: Bash Syntax Check
-      run: find . -type f -name "*.sh" -exec bash -n {} \;
-
-    - name: Run ShellCheck
-      run: find . -type f -name "*.sh" -exec shellcheck --severity=warning {} +
+      - uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          severity: warning
