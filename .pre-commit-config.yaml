@@ -12,7 +12,7 @@ repos:
       - id: trailing-whitespace
         name: trim trailing whitespace
       - id: no-commit-to-branch
-        args: ['--branch', 'master']
+        args: ['--branch', 'main']
       - id: check-added-large-files
         name: check for added large files
       - id: detect-private-key
@@ -46,14 +46,14 @@ repos:
         args: ['--severity=warning']
         exclude: '^\.env'
 
-  - repo: local
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.13.1-1
     hooks:
       - id: shfmt
-        name: shfmt
-        entry: shfmt
-        language: system
         args: [--write, --indent, '2', --case-indent, --binary-next-line]
-        types: [shell]
+
+  - repo: local
+    hooks:
       - id: bash-syntax
         name: bash syntax check
         entry: bash -n
