@@ -2,14 +2,19 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: trailing-whitespace
-        name: trim trailing whitespace
-      - id: end-of-file-fixer
-        name: fix end of files
-      - id: check-added-large-files
-        name: check for added large files
+      - id: check-yaml
+      - id: check-json
+        files: \.json$
       - id: check-merge-conflict
         name: check for merge conflicts
+      - id: end-of-file-fixer
+        name: fix end of files
+      - id: trailing-whitespace
+        name: trim trailing whitespace
+      - id: no-commit-to-branch
+        args: ['--branch', 'master']
+      - id: check-added-large-files
+        name: check for added large files
       - id: detect-private-key
         name: detect private key
       - id: mixed-line-ending
@@ -19,6 +24,11 @@ repos:
         name: check executables have shebangs
       - id: check-shebang-scripts-are-executable
         name: check shebang scripts are executable
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
 
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
@@ -38,9 +48,21 @@ repos:
 
   - repo: local
     hooks:
+      - id: shfmt
+        name: shfmt
+        entry: shfmt
+        language: system
+        args: [--diff, --indent, '2', --case-indent, --binary-next-line]
+        types: [shell]
       - id: bash-syntax
         name: bash syntax check
         entry: bash -n
         language: system
         types: [shell]
         exclude: '^\.env'
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [--config-file, .yamllint.yml]
